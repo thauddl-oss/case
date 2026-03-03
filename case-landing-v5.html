@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASE — 사주 · 심리학 · 케이스 데이터 교차 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0b08;
+    --surface: #141210;
+    --surface2: #1c1916;
+    --border: #2a2520;
+    --border-light: #342e28;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a6330;
+    --text: #e8e0d4;
+    --text-dim: #8a7f72;
+    --text-faint: #4a4238;
+    --red: #c45c3a;
+    --green: #5a9a6a;
+    --blue: #4a7a9a;
+    --rose: #b05070;
+    --purple: #8a6aaa;
+    --purple-dim: #4a3a5a;
+    --purple-surface: #1a1520;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Serif KR', serif; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 1000; opacity: 0.4; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+
+  /* Header */
+  header { padding: 48px 0 40px; text-align: center; }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+  .tagline { font-size: 11px; color: var(--text-dim); letter-spacing: 0.2em; font-family: 'DM Mono', monospace; font-weight: 300; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 40px 0 48px; border-bottom: 1px solid var(--border); }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; line-height: 1.5; color: var(--text); margin-bottom: 16px; }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-desc { font-size: 14px; color: var(--text-dim); line-height: 1.8; font-weight: 300; max-width: 440px; margin: 0 auto 28px; }
+
+  /* Method tags */
+  .method-tags { display: flex; justify-content: center; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+  .method-tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; padding: 4px 10px; border: 1px solid var(--border-light); color: var(--text-faint); }
+  .method-tag.saju { border-color: var(--gold-dim); color: var(--gold); }
+  .method-tag.psych { border-color: var(--purple-dim); color: var(--purple); }
+  .method-tag.data { border-color: #2a4a5a; color: var(--blue); }
+
+  .hero-stats { display: flex; justify-content: center; gap: 40px; }
+  .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--gold); line-height: 1; margin-bottom: 4px; }
+  .hero-stat-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.2em; }
+
+  /* Topic */
+  .topic-section { padding: 48px 0 0; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 20px; }
+  .topic-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+  .topic-grid-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 28px; }
+  .topic-card { background: var(--surface); border: 1px solid var(--border); padding: 18px 10px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+  .topic-card:hover { border-color: var(--gold-dim); background: #1a1710; }
+  .topic-card.active { border-color: var(--gold); background: #1a1710; }
+  .topic-card.active::after { content: '✓'; position: absolute; top: 6px; right: 8px; font-size: 9px; color: var(--gold); font-family: 'DM Mono', monospace; }
+  .topic-icon { font-size: 18px; margin-bottom: 8px; }
+  .topic-name { font-size: 13px; color: var(--text); font-weight: 400; margin-bottom: 4px; }
+  .topic-desc { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text-faint); letter-spacing: 0.05em; line-height: 1.5; }
+  .situation-select-wrap { margin-bottom: 20px; display: none; animation: fadeIn 0.3s ease; }
+  .situation-select-wrap.visible { display: block; }
+  .cal-type-group { display: flex; gap: 6px; }
+  .cal-btn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.1em; padding: 6px 14px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; }
+  .cal-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .cal-btn.active { border-color: var(--gold); color: var(--gold); background: #1a1710; }
+  /* 세로 리스트 피커 */
+  .vlist-row { display: flex; align-items: flex-start; gap: 6px; }
+  .vlist-box { flex: 1; position: relative; }
+  .vlist-display { display: flex; align-items: center; justify-content: space-between; background: #0d0b08; border: 1px solid var(--border); padding: 8px 10px; cursor: pointer; transition: border-color 0.15s; user-select: none; }
+  .vlist-display:hover, .vlist-box.open .vlist-display { border-color: var(--gold-dim); }
+  .vlist-val { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em; color: var(--text-faint); }
+  .vlist-val.set { color: var(--text); }
+  .vlist-arrow { font-size: 9px; color: var(--gold); transition: transform 0.2s; }
+  .vlist-box.open .vlist-arrow { transform: rotate(180deg); }
+  .vlist-panel { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #0d0b08; border: 1px solid var(--gold-dim); border-top: none; max-height: 200px; overflow-y: auto; z-index: 100; scrollbar-width: thin; scrollbar-color: var(--gold-dim) transparent; }
+  .vlist-panel::-webkit-scrollbar { width: 3px; }
+  .vlist-panel::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+  .vlist-box.open .vlist-panel { display: block; animation: vlFadeIn 0.12s ease; }
+  @keyframes vlFadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+  .vlist-item { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.05em; color: var(--text-dim); padding: 9px 10px; cursor: pointer; transition: all 0.1s; border-bottom: 1px solid #1a1710; }
+  .vlist-item:last-child { border-bottom: none; }
+  .vlist-item:hover { background: #141208; color: var(--text); }
+  .vlist-item.selected { color: var(--gold); background: #1a1710; }
+  input[type="date"] { color-scheme: dark; }
+  input[type="time"]::-webkit-datetime-edit-ampm-field { display: none; }
+
+  /* 커스텀 시간 피커 */
+  .time-picker-wrap { display: flex; align-items: center; gap: 12px; }
+  .time-picker { display: flex; align-items: center; gap: 4px; background: #0d0b08; border: 1px solid var(--border); padding: 4px 8px; flex: 1; max-width: 160px; }
+  .time-picker.disabled { opacity: 0.3; pointer-events: none; }
+  .time-col { display: flex; flex-direction: column; align-items: center; width: 48px; }
+  .time-col-label { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text-faint); letter-spacing: 0.15em; margin-bottom: 4px; }
+  .time-sep { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); line-height: 1; padding: 0 2px; margin-top: 14px; }
+  .time-scroll { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .time-btn { background: none; border: none; color: var(--text-faint); font-family: 'DM Mono', monospace; font-size: 11px; cursor: pointer; padding: 2px 8px; line-height: 1; transition: color 0.15s; }
+  .time-btn:hover { color: var(--gold); }
+  .time-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; color: var(--text); min-width: 40px; text-align: center; line-height: 1.2; }
+  .time-unknown-label { display: flex; align-items: center; gap: 5px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.1em; white-space: nowrap; }
+  .situation-intro { display: none; font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--text-mid); line-height: 1.8; font-weight: 300; margin-bottom: 10px; font-style: italic; padding: 0 2px; animation: fadeIn 0.3s ease; }
+  .situation-intro.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .situation-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.25em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 10px; }
+  .situation-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .situation-chip { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.08em; padding: 5px 12px; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; transition: all 0.15s; background: var(--surface); }
+  .situation-chip:hover { border-color: var(--gold-dim); color: var(--text); }
+  .situation-chip.active { border-color: var(--gold); color: var(--gold); background: #1a1710; }
+
+  /* Input */
+  .input-section { padding: 0 0 40px; }
+  .input-box { background: var(--surface); border: 1px solid var(--border); padding: 20px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .input-box:focus-within { border-color: var(--gold-dim); }
+  .input-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.25em; color: var(--text-dim); margin-bottom: 10px; display: block; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  textarea, input[type="text"] { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.8; resize: none; }
+  textarea::placeholder, input::placeholder { color: var(--text-faint); }
+
+  .submit-btn { width: 100%; padding: 18px; background: var(--gold); border: none; color: var(--bg); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 4px; }
+  .submit-btn:hover { background: var(--gold-light); }
+  .submit-note { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); text-align: center; margin-top: 10px; letter-spacing: 0.15em; }
+
+  .divider { border: none; border-top: 1px solid var(--border); }
+
+  /* Loading */
+  .loading { display: none; text-align: center; padding: 80px 0; }
+  .loading.active { display: block; }
+  .loading-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.3em; animation: pulse 2s ease infinite; margin-bottom: 28px; }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loading-steps { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .loading-step { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; opacity: 0; transition: opacity 0.5s; }
+  .loading-step.visible { opacity: 0.7; }
+
+  /* Result */
+  .result-section { display: none; padding: 48px 0; animation: fadeUp 0.6s ease forwards; }
+  .result-section.visible { display: block; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .sample-badge { display: inline-flex; align-items: center; gap: 8px; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold-dim); letter-spacing: 0.25em; border: 1px solid var(--border-light); padding: 5px 12px; margin-bottom: 32px; }
+  .sample-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: blink 2s ease infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+  .result-header { margin-bottom: 28px; }
+  .result-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .result-subtitle { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; }
+
+  /* Triple summary */
+  .triple-block { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--border); margin-bottom: 16px; overflow: hidden; }
+  .triple-col { padding: 18px 16px; border-right: 1px solid var(--border); }
+  .triple-col:last-child { border-right: none; }
+  .triple-col.t-saju { background: #1a160a; }
+  .triple-col.t-psych { background: var(--purple-surface); }
+  .triple-col.t-case { background: #0e1620; }
+  .triple-tag { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+  .triple-tag.saju { color: var(--gold); }
+  .triple-tag.psych { color: var(--purple); }
+  .triple-tag.case { color: var(--blue); }
+  .triple-finding { font-size: 12px; color: var(--text-dim); line-height: 1.6; font-weight: 300; }
+  .triple-finding strong { color: var(--text); font-weight: 600; }
+
+  /* Stats */
+  .stats-block { background: var(--surface); border: 1px solid var(--border); padding: 28px; margin-bottom: 16px; }
+  .stats-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 24px; }
+  .main-stat { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .stat-number { font-family: 'Cormorant Garamond', serif; font-size: 52px; font-weight: 600; line-height: 1; }
+  .stat-number.red { color: var(--red); } .stat-number.green { color: var(--green); } .stat-number.gold { color: var(--gold); }
+  .stat-label { font-size: 14px; color: var(--text-dim); font-weight: 300; }
+  .stat-desc { font-size: 11px; color: var(--text-faint); margin-bottom: 24px; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 12px; }
+  .bar-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); width: 80px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 4px; background: var(--border); overflow: hidden; }
+  .bar-fill { height: 100%; transition: width 1.4s cubic-bezier(0.16,1,0.3,1); }
+  .bar-fill.red { background: var(--red); } .bar-fill.green { background: var(--green); }
+  .bar-fill.blue { background: var(--blue); } .bar-fill.gold { background: var(--gold); }
+  .bar-pct { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); width: 36px; text-align: right; }
+
+  /* Pattern */
+  .pattern-block { background: var(--surface); border: 1px solid var(--border); padding: 28px; margin-bottom: 16px; }
+  .pattern-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 20px; }
+  .pattern-item { display: flex; gap: 16px; margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .pattern-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .pattern-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold-dim); flex-shrink: 0; width: 20px; margin-top: 2px; }
+  .pattern-body { flex: 1; }
+  .pattern-text { font-size: 13px; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin-bottom: 8px; }
+  .pattern-text strong { color: var(--text); font-weight: 600; }
+  .pattern-basis { display: flex; gap: 6px; flex-wrap: wrap; }
+  .basis-tag { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; padding: 2px 7px; border: 1px solid; }
+  .basis-tag.saju { border-color: var(--gold-dim); color: var(--gold); }
+  .basis-tag.psych { border-color: var(--purple-dim); color: var(--purple); }
+  .basis-tag.data { border-color: #2a4a5a; color: var(--blue); }
+
+  /* Verdict */
+  .verdict-block { background: #0f0d0a; border: 1px solid var(--border); border-left: 3px solid var(--gold-dim); padding: 28px; margin-bottom: 16px; }
+  .verdict-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 16px; }
+  .verdict-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 300; color: var(--text-dim); line-height: 1.8; font-style: italic; }
+  .verdict-text em { color: var(--gold-light); font-style: normal; }
+  .verdict-text strong { color: var(--text); font-style: normal; font-weight: 600; }
+
+  /* Locked */
+  .locked-section { margin-bottom: 16px; position: relative; }
+  .locked-overlay { background: linear-gradient(to bottom, transparent 0%, var(--bg) 60%); position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 24px; }
+  .locked-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.25em; margin-bottom: 8px; }
+  .locked-icon { font-size: 20px; color: var(--gold-dim); }
+  .locked-content { filter: blur(3px); pointer-events: none; user-select: none; }
+
+  /* Upsell */
+  .upsell { background: var(--surface); border: 1px solid var(--gold-dim); padding: 36px; text-align: center; margin-top: 32px; }
+  .upsell-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 16px; }
+  .upsell-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 400; color: var(--text); line-height: 1.4; margin-bottom: 16px; }
+  .upsell-includes { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; text-align: left; max-width: 340px; margin-left: auto; margin-right: auto; }
+  .upsell-include-item { display: flex; gap: 10px; align-items: flex-start; }
+  .upsell-check { color: var(--gold); font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+  .upsell-include-text { font-size: 12px; color: var(--text-dim); font-weight: 300; line-height: 1.5; }
+  .upsell-price { font-family: 'Cormorant Garamond', serif; font-size: 40px; font-weight: 600; color: var(--gold); line-height: 1; margin-bottom: 4px; }
+  .upsell-price-note { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.15em; margin-bottom: 24px; }
+  .upsell-btn { display: block; width: 100%; padding: 16px; background: var(--gold); border: none; color: var(--bg); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+  .upsell-btn:hover { background: var(--gold-light); }
+  .upsell-btn-secondary { display: block; width: 100%; padding: 14px; background: transparent; border: 1px solid var(--border-light); color: var(--gold); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .upsell-btn-secondary:hover { border-color: var(--gold-dim); }
+  .upsell-guarantee { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.1em; margin-top: 16px; }
+
+  footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; margin-top: 40px; }
+  .footer-text { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.1em; line-height: 2; }
+
+  .hidden { display: none !important; }
+
+  /* Required mark */
+  .required { color: var(--red); font-size: 10px; }
+
+  /* Error message */
+  .error-msg { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--red); letter-spacing: 0.1em; margin-bottom: 12px; min-height: 16px; display: none; }
+  .error-msg.visible { display: block; }
+  .input-box.error { border-color: var(--red); }
+
+  /* Select field */
+  .input-select { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 14px; cursor: pointer; }
+  .input-select option { background: var(--surface); color: var(--text); }
+
+  /* Gate overlay */
+  .gate-overlay { display: none; position: fixed; inset: 0; background: rgba(10,9,6,0.92); z-index: 500; align-items: center; justify-content: center; padding: 24px; }
+  .gate-overlay.active { display: flex; }
+  .gate-modal { background: var(--surface); border: 1px solid var(--border-light); padding: 40px 32px; max-width: 400px; width: 100%; animation: fadeUp 0.4s ease; }
+  .gate-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .gate-badge::before { content: ''; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: blink 2s ease infinite; }
+  .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; line-height: 1.4; color: var(--text); margin-bottom: 10px; }
+  .gate-desc { font-size: 12px; color: var(--text-dim); line-height: 1.7; font-weight: 300; margin-bottom: 24px; }
+  .gate-input-wrap { margin-bottom: 12px; }
+  .gate-input { width: 100%; background: var(--bg); border: 1px solid var(--border); outline: none; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 14px; padding: 12px 16px; transition: border-color 0.2s; }
+  .gate-input:focus { border-color: var(--gold-dim); }
+  .gate-input.error { border-color: var(--red); }
+  .gate-error { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--red); letter-spacing: 0.1em; margin-top: 6px; min-height: 14px; }
+  .gate-phone-wrap { margin-bottom: 24px; }
+  .gate-phone-note { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 0.05em; margin-top: 6px; line-height: 1.6; }
+  .gate-btn { width: 100%; padding: 16px; background: var(--gold); border: none; color: var(--bg); font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+  .gate-btn:hover { background: var(--gold-light); }
+  .gate-privacy { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.05em; text-align: center; line-height: 1.5; }
+  .api-error { text-align: center; padding: 40px 0; }
+  .api-error-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); letter-spacing: 0.1em; line-height: 1.8; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">Case</div>
+    <div class="tagline">사주 · 심리학 · 케이스 데이터 교차 분석</div>
+  </header>
+
+  <div class="hero">
+    <h1 class="hero-title">좋은 운을 살리는 사람과<br>흘려보내는 사람의 차이<br><em>타이밍을 알고, 선택이 달랐을 뿐입니다</em></h1>
+    <p class="hero-desc">사주로 타이밍을 보고, 심리학으로 당신을 보고, 오늘의 선택을 드립니다</p>
+    <div class="method-tags">
+      <div class="method-tag saju">◈ 사주 · 만세력</div>
+      <div class="method-tag psych">◎ 심리학 이론</div>
+      <div class="method-tag data">→ 케이스 데이터</div>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">6,800+</div><div class="hero-stat-label">분석 케이스</div></div>
+      <div><div class="hero-stat-num">7개</div><div class="hero-stat-label">카테고리</div></div>
+      <div><div class="hero-stat-num">무료</div><div class="hero-stat-label">지금 시작</div></div>
+    </div>
+  </div>
+
+  <!-- Topic -->
+  <div class="topic-section" id="topicSection">
+    <div class="section-label">01 — 분석 주제 선택</div>
+    <div class="topic-grid">
+      <div class="topic-card" onclick="selectTopic('love')" id="topic-love">
+        <div class="topic-icon">♡</div>
+        <div class="topic-name">연애</div>
+        <div class="topic-desc">감정·관계·썸</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('wealth')" id="topic-wealth">
+        <div class="topic-icon">◈</div>
+        <div class="topic-name">재물</div>
+        <div class="topic-desc">돈·자산·소비</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('job')" id="topic-job">
+        <div class="topic-icon">⊞</div>
+        <div class="topic-name">직업</div>
+        <div class="topic-desc">이직·취업·승진</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('study')" id="topic-study">
+        <div class="topic-icon">◎</div>
+        <div class="topic-name">학업</div>
+        <div class="topic-desc">시험·진학·방향</div>
+      </div>
+    </div>
+    <div class="topic-grid-bottom">
+      <div class="topic-card" onclick="selectTopic('business')" id="topic-business">
+        <div class="topic-icon">△</div>
+        <div class="topic-name">사업</div>
+        <div class="topic-desc">창업·운영·파트너</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('relation')" id="topic-relation">
+        <div class="topic-icon">○</div>
+        <div class="topic-name">관계</div>
+        <div class="topic-desc">가족·친구·갈등</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('health')" id="topic-health">
+        <div class="topic-icon">◇</div>
+        <div class="topic-name">건강</div>
+        <div class="topic-desc">몸·에너지·결정</div>
+      </div>
+    </div>
+
+    <!-- 상황 선택 -->
+    <div class="situation-select-wrap" id="situationChips">
+      <div class="situation-label">상황 선택 — 해당하는 것을 고르세요</div>
+      <div class="situation-chips" id="chipsContainer"></div>
+    </div>
+
+    <div class="input-section" id="inputSection">
+      <div class="section-label">02 — 정보 입력</div>
+
+      <!-- 공통 필드 -->
+
+      <!-- 생년월일 -->
+      <div class="input-box" id="field-birthdate" style="margin-bottom:16px;">
+        <label class="input-label">생년월일 <span class="required">*</span></label>
+        <div class="vlist-row">
+          <div class="vlist-box" id="vb-year">
+            <div class="vlist-display" onclick="toggleVList('year')">
+              <span class="vlist-val" id="vv-year">년</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-year"></div>
+          </div>
+          <div class="vlist-box" id="vb-month">
+            <div class="vlist-display" onclick="toggleVList('month')">
+              <span class="vlist-val" id="vv-month">월</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-month"></div>
+          </div>
+          <div class="vlist-box" id="vb-day">
+            <div class="vlist-display" onclick="toggleVList('day')">
+              <span class="vlist-val" id="vv-day">일</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-day"></div>
+          </div>
+        </div>
+        <input type="hidden" id="birthdate" value="">
+      </div>
+
+      <!-- 출생시간 -->
+      <div class="input-box" id="field-birthtime" style="margin-bottom:16px;">
+        <label class="input-label">출생시간</label>
+        <div class="vlist-row">
+          <div class="vlist-box" id="vb-hour">
+            <div class="vlist-display" onclick="toggleVList('hour')">
+              <span class="vlist-val" id="vv-hour">시</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-hour"></div>
+          </div>
+          <div class="vlist-box" id="vb-min">
+            <div class="vlist-display" onclick="toggleVList('min')">
+              <span class="vlist-val" id="vv-min">분</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-min"></div>
+          </div>
+          <label class="time-unknown-label" style="margin-left:8px;">
+            <input type="checkbox" id="birthtimeUnknown" onchange="toggleBirthtime(this)" style="cursor:pointer; accent-color:var(--gold);">
+            <span>모름</span>
+          </label>
+        </div>
+        <input type="hidden" id="birthtime" value="">
+      </div>
+
+      <div class="input-row" style="margin-bottom:16px;">
+        <div class="input-box" id="field-gender">
+          <label class="input-label">성별 <span class="required">*</span></label>
+          <div class="cal-type-group">
+            <button type="button" class="cal-btn" id="gender-f" onclick="selectGender('여')">여자</button>
+            <button type="button" class="cal-btn" id="gender-m" onclick="selectGender('남')">남자</button>
+          </div>
+          <input type="hidden" id="gender" value="">
+        </div>
+        <div class="input-box" id="field-caltype">
+          <label class="input-label">달력 <span class="required">*</span></label>
+          <div class="cal-type-group">
+            <button type="button" class="cal-btn active" id="cal-solar" onclick="selectCalType('solar')">양력</button>
+            <button type="button" class="cal-btn" id="cal-lunar" onclick="selectCalType('lunar')">음력</button>
+            <button type="button" class="cal-btn" id="cal-leap" onclick="selectCalType('leap')">윤달</button>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" id="caltype" value="solar">
+
+      <!-- 카테고리별 추가 필드 -->
+      <div id="categoryFields"></div>
+
+      <!-- 상황 텍스트 -->
+      <div class="situation-intro" id="situationIntro"></div>
+      <div class="input-box">
+        <label class="input-label" id="inputLabel">지금 상황을 설명해주세요 <span class="required">*</span></label>
+        <textarea id="situation" rows="5" placeholder=""></textarea>
+      </div>
+
+      <!-- 유효성 에러 -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <p class="submit-note" style="text-align:center; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-faint); margin-bottom:12px; letter-spacing:0.1em;">지금 운을 놓치고 있을 수 있습니다</p>
+      <button class="submit-btn" onclick="validateAndProceed()">무료 분석 받기 →</button>
+      <p class="submit-note">3분 · 회원가입 불필요</p>
+    </div>
+  </div>
+
+  <!-- 이메일 게이트 모달 -->
+  <div class="gate-overlay" id="gateOverlay">
+    <div class="gate-modal">
+      <div class="gate-badge">분석중</div>
+      <div class="gate-title">거의 다 됐습니다<br>결과 받을 이메일을 입력해주세요</div>
+      <div class="gate-desc">스팸 없음 · 언제든 수신 거부 가능</div>
+      <div class="gate-input-wrap">
+        <input type="email" id="gateEmail" class="gate-input" placeholder="example@email.com">
+        <div class="gate-error" id="gateError"></div>
+      </div>
+      <div class="gate-phone-wrap">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--text-dim); margin-bottom:8px;">카카오톡으로 결과 받기 <span style="color:var(--text-faint);">· 선택</span></div>
+        <label class="gate-phone-label">
+          <input type="text" id="gatePhone" class="gate-input" placeholder="010-0000-0000">
+        </label>
+        <div class="gate-phone-note">📱 입력 시 카카오톡으로도 결과를 받을 수 있습니다</div>
+      </div>
+      <button class="gate-btn" onclick="submitGate()">무료 분석 받기 →</button>
+      <div class="gate-privacy">개인정보는 결과 발송 외 다른 용도로 사용되지 않습니다</div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Loading -->
+  <div class="loading" id="loadingSection">
+    <div class="loading-text">ANALYZING PATTERN</div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1"></div>
+      <div class="loading-step" id="step2"></div>
+      <div class="loading-step" id="step3"></div>
+      <div class="loading-step" id="step4"></div>
+      <div class="loading-step" id="step5"></div>
+    </div>
+  </div>
+
+
+  <!-- ── 동적 결과 섹션 ── -->
+  <div class="result-section hidden" id="result-dynamic">
+
+    <!-- 결과 헤더 -->
+    <div class="result-header">
+      <div class="section-label">03 — 케이스 분석 결과</div>
+      <p class="result-title" id="result-title">분석 중...</p>
+      <div class="result-subtitle" id="result-subtitle"></div>
+    </div>
+
+    <!-- 3관점 요약 -->
+    <div class="triple-block">
+      <div class="triple-col t-saju">
+        <div class="triple-tag saju">◈ 사주</div>
+        <p class="triple-finding" id="result-saju">분석 중...</p>
+      </div>
+      <div class="triple-col t-psych">
+        <div class="triple-tag psych">◎ 심리학</div>
+        <p class="triple-finding" id="result-psych">분석 중...</p>
+      </div>
+      <div class="triple-col t-case">
+        <div class="triple-tag case">→ 데이터</div>
+        <p class="triple-finding" id="result-data">분석 중...</p>
+      </div>
+    </div>
+
+    <!-- 패턴 분석 (무료 공개) -->
+    <div class="pattern-block" id="result-patterns">
+      <div class="pattern-title">패턴 분석</div>
+    </div>
+
+    <!-- 패턴 진단 -->
+    <div class="verdict-block">
+      <div class="verdict-title">패턴 진단</div>
+      <p class="verdict-text" id="result-verdict">분석 중...</p>
+    </div>
+
+    <!-- 블러 잠금 섹션 -->
+    <div class="locked-section">
+      <div class="locked-content">
+        <div class="pattern-block">
+          <div class="pattern-title">전체 리포트 포함 내용</div>
+          <div class="pattern-item"><div class="pattern-num">→</div><div class="pattern-body"><p class="pattern-text">사주 팔자 구조 + 대운·세운 정밀 분석 · 지금 시기가 어떤 의미인지</p></div></div>
+          <div class="pattern-item"><div class="pattern-num">→</div><div class="pattern-body"><p class="pattern-text">심리 패턴 심층 진단 · 이 패턴이 반복되는 구조적 이유</p></div></div>
+          <div class="pattern-item"><div class="pattern-num">→</div><div class="pattern-body"><p class="pattern-text">유사 케이스 상세 3건 · 같은 구조에서 다른 선택, 6개월 후</p></div></div>
+          <div class="pattern-item"><div class="pattern-num">→</div><div class="pattern-body"><p class="pattern-text">시나리오 A/B/C + 오늘부터 할 것 3가지 · 구체적 행동 가이드</p></div></div>
+        </div>
+      </div>
+      <div class="locked-overlay">
+        <div class="locked-label">전체 리포트에서 확인 가능</div>
+        <div class="locked-icon">🔒</div>
+      </div>
+    </div>
+
+    <!-- Upsell -->
+    <div class="upsell">
+      <div class="upsell-label">전체 리포트</div>
+      <p class="upsell-title">사주 + 심리학 + 케이스 데이터<br>완전 통합 분석</p>
+      <div class="upsell-includes">
+        <div class="upsell-include-item"><div class="upsell-check">✓</div><div class="upsell-include-text">사주 팔자 + 대운·세운 흐름 분석</div></div>
+        <div class="upsell-include-item"><div class="upsell-check">✓</div><div class="upsell-include-text">심리 패턴 심층 진단 + 원인 분석</div></div>
+        <div class="upsell-include-item"><div class="upsell-check">✓</div><div class="upsell-include-text">유사 케이스 상세 3건 비교</div></div>
+        <div class="upsell-include-item"><div class="upsell-check">✓</div><div class="upsell-include-text">시나리오 A/B/C + 즉시 실행 가이드</div></div>
+        <div class="upsell-include-item"><div class="upsell-check">✓</div><div class="upsell-include-text">사주 + 심리학 + 데이터 통합 최종 진단</div></div>
+      </div>
+      <div class="upsell-price">19,900원</div>
+      <div class="upsell-price-note">1회 결제 · 리포트 즉시 발송 · 24시간 환불 보장</div>
+      <button class="upsell-btn">전체 리포트 받기 →</button>
+      <button class="upsell-btn-secondary">풀패키지 (7개 카테고리) 49,000원</button>
+      <div class="upsell-guarantee">결제 후 24시간 내 만족 못하면 전액 환불</div>
+    </div>
+
+    <!-- API 오류 시 -->
+    <div class="api-error hidden" id="apiError">
+      <div class="api-error-text">분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.</div>
+      <button class="submit-btn" onclick="location.reload()" style="margin-top:16px">다시 시도 →</button>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-text">
+      CASE · 사주 · 심리학 · 케이스 데이터 교차 분석<br>
+      본 결과는 통계적 패턴 분석이며 개인의 실제 결과를 보장하지 않습니다<br>
+      © 2026 CASE
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  let selectedTopic = null;
+  let selectedSituation = null;
+
+  // 카테고리 설정
+  const config = {
+    love: {
+      label: '이 사람과의 상황을 친한 친구한테 설명하듯 써주세요',
+      intro: '판단하지 않습니다. 지금 이 사람과 어떤 상황인지, 솔직하게 편하게 써주세요.',
+      placeholder: '예: 4개월째 만나는 사람인데 뜨겁다 차갑다를 반복해요. 만날 때는 분명히 좋은데 연락이 갑자기 없어지고, 다시 연락이 오면 또 친해지고를 반복합니다. 제가 더 좋아하는 건지, 이게 맞는 건지 모르겠고 지쳐가는 느낌도 있어요.',
+      steps: ['사주 만세력 계산 중', '회피형 애착 패턴 분석 중', '유사 연애 케이스 2,314건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['썸 / 모호한 관계', '권태기', '장거리 연애', '재회 가능성', '결혼 결정'],
+      result: 'love',
+      extraFields: [
+        { id: 'love_status', label: '현재 관계 상태', type: 'select', options: ['선택해주세요', '썸 / 아직 교제 전', '교제 중', '헤어진 상태', '기타'], required: true },
+        { id: 'love_duration', label: '알고 지낸 기간', type: 'text', placeholder: '예: 4개월', required: true },
+        { id: 'love_partner_birth', label: '상대방 생년월일 (없으면 모름)', type: 'text', placeholder: '예: 1990.07.22 / 모름', required: false }
+      ]
+    },
+    wealth: {
+      label: '돈 때문에 요즘 어떤 생각이 드는지 편하게 써주세요',
+      intro: '금액이나 숫자는 몰라도 됩니다. 어떤 상황이 반복되는지, 어떤 감각이 드는지가 더 중요합니다.',
+      placeholder: '예: 매달 월급날이 되면 잠깐 여유로운 느낌이 드는데, 한 달이 지나면 또 통장이 바닥이에요. 딱히 큰 돈을 쓴 것도 아닌데 어디에 쓴 건지도 모르겠고, 저축은 해야겠다고 생각만 하다가 또 한 달이 지나있는 게 반복됩니다.',
+      steps: ['사주 만세력 계산 중', '소비 심리 패턴 분석 중', '유사 재물 케이스 2,841건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['돈이 모이지 않는 구조', '투자 / 큰 지출 결정', '부업 / 수입 확대', '빚 / 재정 위기', '이사 / 큰 계약'],
+      result: 'wealth',
+      extraFields: [
+        { id: 'wealth_income', label: '월 수입 구간', type: 'select', options: ['선택해주세요', '수입 없음', '200만원 이하', '200~400만원', '400~700만원', '700만원 이상'], required: true },
+        { id: 'wealth_issue', label: '주요 고민 유형', type: 'select', options: ['선택해주세요', '돈이 모이지 않음', '투자 / 지출 결정', '수입 확대', '빚 / 재정 위기', '기타'], required: true }
+      ]
+    },
+    job: {
+      label: '지금 직업 고민을 처음부터 설명해주세요',
+      intro: '언제부터 이런 생각이 들었는지, 지금 어떤 상태인지 순서대로 써주시면 더 정확하게 분석됩니다.',
+      placeholder: '예: 3년차 마케터인데 올해 연봉 협상이 기대보다 낮게 됐어요. 이직을 생각하긴 하는데 막상 준비를 시작하려면 무섭고, 지금 회사가 나쁜 건 아니니까 괜히 움직이는 건 아닐까 싶기도 해요. 이 업계가 맞는지도 사실 잘 모르겠어서 결정이 안 서는 상태입니다.',
+      steps: ['사주 만세력 계산 중', '현상 유지 편향 패턴 분석 중', '유사 직업 케이스 3,124건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['이직 결정', '취업 / 합격', '승진 / 연봉 협상', '직장 내 갈등', '번아웃 / 방향 상실'],
+      result: 'career',
+      extraFields: [
+        { id: 'job_status', label: '현재 상태', type: 'select', options: ['선택해주세요', '재직 중', '구직 중', '프리랜서', '휴직 중'], required: true },
+        { id: 'job_field', label: '업종 / 직군', type: 'text', placeholder: '예: IT 개발자, 마케터, 간호사', required: true },
+        { id: 'job_issue', label: '고민 유형', type: 'select', options: ['선택해주세요', '이직 결정', '취업 / 합격', '승진 / 연봉', '직장 내 갈등', '번아웃'], required: true }
+      ]
+    },
+    study: {
+      label: '지금 공부 상황을 솔직하게 써주세요',
+      intro: '열심히 하고 있는데 안 되는 건지, 아예 방향이 맞는지 모르는 건지 — 지금 느끼는 그대로 써주세요.',
+      placeholder: '예: 공무원 시험 2년째인데 점수가 오르긴 하는데 아직 합격권에 멀어요. 주변에서 취업하라는 말도 있고, 올해도 안 되면 다른 방향을 생각해야 하나 싶기도 한데, 그냥 포기하기는 아까운 마음도 있어서 매일 흔들립니다.',
+      steps: ['사주 만세력 계산 중', '학습 동기 패턴 분석 중', '유사 학업 케이스 1,847건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['시험 합격 가능성', '진로 / 전공 결정', '유학 / 대학원', '학업 의욕 저하', '편입 / 재수 결정'],
+      result: 'career',
+      extraFields: [
+        { id: 'study_status', label: '현재 상태', type: 'select', options: ['선택해주세요', '재학 중', '재수 / 반수', '취준 중', '대학원 준비', '기타'], required: true },
+        { id: 'study_goal', label: '목표', type: 'text', placeholder: '예: 공무원 시험, 의대 편입, 해외 대학원', required: true }
+      ]
+    },
+    business: {
+      label: '지금 사업 상황을 처음부터 설명해주세요',
+      intro: '잘 되는 부분과 안 되는 부분을 같이 써주세요. 둘 다 알아야 정확하게 볼 수 있습니다.',
+      placeholder: '예: 온라인 쇼핑몰 2년차인데 처음엔 월 매출 800만원까지 갔는데 6개월째 500만원대에서 멈춰있어요. 광고비를 늘려도 효율이 안 나오고, 상품을 바꿔야 하는지 아예 카테고리를 피벗해야 하는지 모르겠어서 결정을 계속 미루고 있습니다.',
+      steps: ['사주 만세력 계산 중', '사업가 심리 패턴 분석 중', '유사 사업 케이스 2,203건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['창업 타이밍', '매출 정체 / 피벗', '파트너십 / 계약', '폐업 vs 유지', '사업 확장 결정'],
+      result: 'wealth',
+      extraFields: [
+        { id: 'biz_field', label: '업종', type: 'text', placeholder: '예: 온라인 쇼핑몰, 식당, IT 서비스', required: true },
+        { id: 'biz_duration', label: '운영 기간', type: 'select', options: ['선택해주세요', '창업 준비 중', '1년 미만', '1~3년', '3~5년', '5년 이상'], required: true },
+        { id: 'biz_issue', label: '주요 고민', type: 'select', options: ['선택해주세요', '창업 타이밍', '매출 정체 / 피벗', '파트너십', '폐업 고민', '확장 결정'], required: true }
+      ]
+    },
+    relation: {
+      label: '이 사람과 어떤 일이 있었는지 처음부터 써주세요',
+      intro: '누가 잘못됐는지를 보는 게 아닙니다. 이 관계에서 어떤 패턴이 반복되고 있는지를 봅니다.',
+      placeholder: '예: 부모님과 갈등이 오래됐어요. 제 선택에 대해 간섭이 심하고, 말을 해봤는데 이해받지 못하는 느낌이 들어요. 연락을 줄이면 죄책감이 생기고, 자주 연락하면 스트레스가 쌓이고. 독립하고 나서도 심리적으로 완전히 분리가 안 된 것 같아서 어떻게 해야 할지 모르겠습니다.',
+      steps: ['사주 만세력 계산 중', '대인관계 패턴 분석 중', '유사 관계 케이스 1,932건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['가족 / 부모 갈등', '친구 관계 단절', '직장 동료 갈등', '반복되는 관계 패턴', '경계 설정 어려움'],
+      result: 'love',
+      extraFields: [
+        { id: 'rel_target', label: '갈등 대상', type: 'select', options: ['선택해주세요', '부모 / 가족', '형제 / 자매', '친구', '직장 동료 / 상사', '기타'], required: true },
+        { id: 'rel_duration', label: '갈등 기간', type: 'text', placeholder: '예: 3개월, 수년째', required: true }
+      ]
+    },
+    health: {
+      label: '요즘 몸이나 컨디션이 어떤지 편하게 써주세요',
+      intro: '증상이 정확하지 않아도 됩니다. 언제부터, 어떤 상황에서 특히 힘든지가 더 중요합니다.',
+      placeholder: '예: 몇 달째 만성 피로가 심해요. 잠을 자도 피곤하고, 무기력한 날이 많아요. 검사는 이상 없다고 하는데 몸 상태가 계속 안 좋아서 생활 습관 문제인지 다른 뭔가가 있는 건지 모르겠습니다.',
+      steps: ['사주 만세력 계산 중', '건강 패턴 분석 중', '유사 건강 케이스 1,621건 탐색 중', '3가지 관점 교차 분석 중', '리포트 생성 중'],
+      situations: ['만성 피로 / 에너지 저하', '수술 / 치료 결정', '정신 건강 / 불안', '체력 관리 패턴', '건강 루틴 구축'],
+      result: 'love',
+      extraFields: [
+        { id: 'health_issue', label: '고민 유형', type: 'select', options: ['선택해주세요', '만성 피로 / 무기력', '수술 / 치료 결정', '정신 건강 / 불안', '체력 저하', '건강 루틴 구축'], required: true },
+        { id: 'health_duration', label: '증상 기간', type: 'text', placeholder: '예: 3개월째, 1년 이상', required: true }
+      ]
+    }
+  };
+
+  // 세로 리스트 피커
+  const vlState = { year: null, month: null, day: null, hour: null, min: null };
+
+  function getMaxDay(y, m) { return new Date(y || 2000, m || 1, 0).getDate(); }
+
+  function buildVList(type) {
+    const panel = document.getElementById('vl-' + type);
+    panel.innerHTML = '';
+    let items = [];
+
+    if (type === 'year') {
+      for (let y = 2025; y >= 1940; y--) items.push({ val: y, label: y + '년' });
+    } else if (type === 'month') {
+      for (let m = 1; m <= 12; m++) items.push({ val: m, label: m + '월' });
+    } else if (type === 'day') {
+      const max = getMaxDay(vlState.year, vlState.month);
+      for (let d = 1; d <= max; d++) items.push({ val: d, label: d + '일' });
+    } else if (type === 'hour') {
+      for (let h = 0; h <= 23; h++) items.push({ val: h, label: String(h).padStart(2,'0') + '시' });
+    } else if (type === 'min') {
+      for (let m = 0; m <= 59; m++) items.push({ val: m, label: String(m).padStart(2,'0') + '분' });
+    }
+
+    items.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'vlist-item' + (vlState[type] === item.val ? ' selected' : '');
+      el.textContent = item.label;
+      el.onclick = (e) => { e.stopPropagation(); selectVListVal(type, item.val); };
+      panel.appendChild(el);
+    });
+
+    // 선택값으로 스크롤
+    setTimeout(() => {
+      const sel = panel.querySelector('.selected');
+      if (sel) sel.scrollIntoView({ block: 'center' });
+    }, 30);
+  }
+
+  function toggleVList(type) {
+    if (document.getElementById('birthtimeUnknown').checked && (type === 'hour' || type === 'min')) return;
+    const box = document.getElementById('vb-' + type);
+    const isOpen = box.classList.contains('open');
+    closeAllVLists();
+    if (!isOpen) {
+      buildVList(type);
+      box.classList.add('open');
+    }
+  }
+
+  function closeAllVLists() {
+    ['year','month','day','hour','min'].forEach(t => {
+      const box = document.getElementById('vb-' + t);
+      if (box) box.classList.remove('open');
+    });
+  }
+
+  function selectVListVal(type, val) {
+    vlState[type] = val;
+    const valEl = document.getElementById('vv-' + type);
+    if (type === 'year') valEl.textContent = val + '년';
+    else if (type === 'month') valEl.textContent = val + '월';
+    else if (type === 'day') valEl.textContent = val + '일';
+    else if (type === 'hour') valEl.textContent = String(val).padStart(2,'0') + '시';
+    else if (type === 'min') valEl.textContent = String(val).padStart(2,'0') + '분';
+    valEl.classList.add('set');
+    closeAllVLists();
+
+    // 월/년 바뀌면 일 범위 조정
+    if ((type === 'year' || type === 'month') && vlState.day) {
+      const max = getMaxDay(vlState.year, vlState.month);
+      if (vlState.day > max) {
+        vlState.day = max;
+        const dayEl = document.getElementById('vv-day');
+        dayEl.textContent = max + '일';
+      }
+    }
+    updateHiddenFields();
+  }
+
+  function updateHiddenFields() {
+    if (vlState.year && vlState.month && vlState.day) {
+      document.getElementById('birthdate').value =
+        vlState.year + '-' + String(vlState.month).padStart(2,'0') + '-' + String(vlState.day).padStart(2,'0');
+    }
+    if (!document.getElementById('birthtimeUnknown').checked && vlState.hour !== null && vlState.min !== null) {
+      document.getElementById('birthtime').value =
+        String(vlState.hour).padStart(2,'0') + ':' + String(vlState.min).padStart(2,'0');
+    }
+  }
+
+  function toggleBirthtime(cb) {
+    const hourBox = document.getElementById('vb-hour');
+    const minBox = document.getElementById('vb-min');
+    if (cb.checked) {
+      closeAllVLists();
+      [hourBox, minBox].forEach(b => { b.style.opacity = '0.3'; b.style.pointerEvents = 'none'; });
+      document.getElementById('birthtime').value = '모름';
+    } else {
+      [hourBox, minBox].forEach(b => { b.style.opacity = '1'; b.style.pointerEvents = 'auto'; });
+      document.getElementById('birthtime').value = '';
+      updateHiddenFields();
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.vlist-box')) closeAllVLists();
+  });
+
+    function selectGender(val) {
+    document.querySelectorAll('#gender-f, #gender-m').forEach(b => b.classList.remove('active'));
+    document.getElementById(val === '여' ? 'gender-f' : 'gender-m').classList.add('active');
+    document.getElementById('gender').value = val;
+  }
+
+  function selectCalType(type) {
+    document.querySelectorAll('.cal-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('cal-' + type).classList.add('active');
+    document.getElementById('caltype').value = type;
+  }
+
+  function selectTopic(topic) {
+    selectedTopic = topic;
+    selectedSituation = null;
+    document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('topic-' + topic).classList.add('active');
+
+    // 상황 칩
+    const chips = config[topic].situations;
+    const container = document.getElementById('chipsContainer');
+    container.innerHTML = chips.map(s =>
+      `<div class="situation-chip" onclick="selectSituation(this,'${s}')">${s}</div>`
+    ).join('');
+    document.getElementById('situationChips').classList.add('visible');
+
+    // 카테고리별 추가 필드 렌더
+    renderCategoryFields(topic);
+
+    // 도입 문장
+    const introEl = document.getElementById('situationIntro');
+    if (config[topic].intro) {
+      introEl.textContent = config[topic].intro;
+      introEl.classList.add('visible');
+    } else {
+      introEl.textContent = '';
+      introEl.classList.remove('visible');
+    }
+
+    // 공통 placeholder / label
+    document.getElementById('situation').placeholder = config[topic].placeholder;
+    document.getElementById('inputLabel').textContent = config[topic].label + ' *';
+
+    // 에러 초기화
+    clearErrors();
+  }
+
+  function selectSituation(el, situation) {
+    selectedSituation = situation;
+    document.querySelectorAll('.situation-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function renderCategoryFields(topic) {
+    const fields = config[topic].extraFields;
+    const container = document.getElementById('categoryFields');
+    container.innerHTML = '';
+
+    fields.forEach((f, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'input-box';
+      wrap.id = 'field-' + f.id;
+
+      let input = '';
+      if (f.type === 'select') {
+        input = `<select id="${f.id}" class="input-select">
+          ${f.options.map(o => `<option value="${o === '선택해주세요' ? '' : o}">${o}</option>`).join('')}
+        </select>`;
+      } else {
+        input = `<input type="text" id="${f.id}" placeholder="${f.placeholder || ''}">`;
+      }
+
+      const req = f.required ? ' <span class="required">*</span>' : ' <span style="font-size:9px;color:var(--text-faint)">(선택)</span>';
+      wrap.innerHTML = `<label class="input-label">${f.label}${req}</label>${input}`;
+
+      // 두 개씩 row로 묶기
+      if (i % 2 === 0 && fields[i + 1]) {
+        const row = document.createElement('div');
+        row.className = 'input-row';
+        const nextWrap = document.createElement('div');
+        nextWrap.className = 'input-box';
+        nextWrap.id = 'field-' + fields[i+1].id;
+        const f2 = fields[i+1];
+        let input2 = '';
+        if (f2.type === 'select') {
+          input2 = `<select id="${f2.id}" class="input-select">
+            ${f2.options.map(o => `<option value="${o === '선택해주세요' ? '' : o}">${o}</option>`).join('')}
+          </select>`;
+        } else {
+          input2 = `<input type="text" id="${f2.id}" placeholder="${f2.placeholder || ''}">`;
+        }
+        const req2 = f2.required ? ' <span class="required">*</span>' : ' <span style="font-size:9px;color:var(--text-faint)">(선택)</span>';
+        nextWrap.innerHTML = `<label class="input-label">${f2.label}${req2}</label>${input2}`;
+        row.appendChild(wrap);
+        row.appendChild(nextWrap);
+        container.appendChild(row);
+      } else if (i % 2 === 0) {
+        // 홀수 마지막 필드: 단독 row
+        const row = document.createElement('div');
+        row.className = 'input-row';
+        const emptyWrap = document.createElement('div');
+        emptyWrap.className = 'input-box';
+        emptyWrap.style.visibility = 'hidden';
+        row.appendChild(wrap);
+        row.appendChild(emptyWrap);
+        container.appendChild(row);
+      }
+      // 짝수 인덱스는 이미 위에서 처리됨
+    });
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.input-box.error').forEach(b => b.classList.remove('error'));
+    const msg = document.getElementById('errorMsg');
+    msg.textContent = '';
+    msg.classList.remove('visible');
+  }
+
+  function showError(msg, fieldId) {
+    const errEl = document.getElementById('errorMsg');
+    errEl.textContent = msg;
+    errEl.classList.add('visible');
+    if (fieldId) {
+      const box = document.getElementById('field-' + fieldId);
+      if (box) box.classList.add('error');
+    }
+    // 해당 필드로 스크롤
+    errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function validateAndProceed() {
+    clearErrors();
+
+    // 카테고리 선택
+    if (!selectedTopic) {
+      showError('분석 주제를 먼저 선택해주세요.');
+      document.getElementById('topicSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    // 생년월일
+    const birthdate = document.getElementById('birthdate').value.trim();
+    if (!birthdate) { showError('생년월일을 선택해주세요.', 'birthdate'); return; }
+
+    // 출생시간
+    const birthtimeUnknown = document.getElementById('birthtimeUnknown').checked;
+    const birthtime = birthtimeUnknown ? '모름' : document.getElementById('birthtime').value.trim();
+    if (!birthtimeUnknown && !birthtime) { showError('출생시간을 입력하거나 모름을 체크해주세요.', 'birthtime'); return; }
+
+    // 성별
+    const gender = document.getElementById('gender').value.trim();
+    if (!gender) { showError('성별을 선택해주세요.', 'gender'); return; }
+
+    // 카테고리별 필수 필드
+    const fields = config[selectedTopic].extraFields;
+    for (const f of fields) {
+      if (!f.required) continue;
+      const el = document.getElementById(f.id);
+      if (!el) continue;
+      const val = el.value.trim();
+      if (!val || val === '') {
+        showError(`"${f.label}"을 입력해주세요.`, f.id);
+        return;
+      }
+    }
+
+    // 상황 텍스트
+    const situation = document.getElementById('situation').value.trim();
+    if (situation.length < 10) {
+      showError('상황을 조금 더 자세히 입력해주세요. (최소 10자)', 'situation');
+      return;
+    }
+
+    // 모두 통과 → 이메일 게이트 열기
+    document.getElementById('gateOverlay').classList.add('active');
+  }
+
+  function submitGate() {
+    const email = document.getElementById('gateEmail').value.trim();
+    const errEl = document.getElementById('gateError');
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errEl.textContent = '올바른 이메일 주소를 입력해주세요.';
+      document.getElementById('gateEmail').classList.add('error');
+      return;
+    }
+
+    errEl.textContent = '';
+    document.getElementById('gateOverlay').classList.remove('active');
+    startAnalysis();
+  }
+
+  // ─────────────────────────────────────────
+  // Make.com 웹훅 URL — 설정 후 교체하세요
+  // ─────────────────────────────────────────
+  const MAKE_WEBHOOK_URL = 'YOUR_MAKE_WEBHOOK_URL_HERE';
+
+  function startAnalysis() {
+    document.getElementById('topicSection').classList.add('hidden');
+    document.querySelector('.divider').classList.add('hidden');
+    document.getElementById('loadingSection').classList.add('active');
+
+    // 로딩 스텝 애니메이션
+    config[selectedTopic].steps.forEach((text, i) => {
+      const el = document.getElementById('step' + (i + 1));
+      el.textContent = text;
+      setTimeout(() => el.classList.add('visible'), i * 800);
+    });
+
+    // 입력 데이터 수집
+    const payload = {
+      category: selectedTopic,
+      situation_type: selectedSituation || '',
+      birthdate: document.getElementById('birthdate').value.trim(),
+      birthtime: document.getElementById('birthtimeUnknown').checked ? '모름' : document.getElementById('birthtime').value.trim(),
+      caltype: document.getElementById('caltype').value,
+      gender: document.getElementById('gender').value.trim(),
+      situation: document.getElementById('situation').value.trim(),
+      email: document.getElementById('gateEmail').value.trim(),
+      phone: document.getElementById('gatePhone').value.trim(),
+      extra_fields: {}
+    };
+
+    // 카테고리별 추가 필드 수집
+    config[selectedTopic].extraFields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (el) payload.extra_fields[f.id] = el.value.trim();
+    });
+
+    // Make.com 웹훅 호출
+    fetch(MAKE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('webhook error');
+      return res.json();
+    })
+    .then(data => {
+      document.getElementById('loadingSection').classList.remove('active');
+      renderResult(data);
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById('loadingSection').classList.remove('active');
+      document.getElementById('result-dynamic').classList.remove('hidden');
+      document.getElementById('result-dynamic').classList.add('visible');
+      document.getElementById('apiError').classList.remove('hidden');
+      document.getElementById('result-dynamic').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  function renderResult(data) {
+    // Make.com이 반환하는 JSON 구조:
+    // {
+    //   title: "패턴 제목",
+    //   subtitle: "PATTERN TYPE · 089 · ...",
+    //   saju: "사주 분석 텍스트",
+    //   psych: "심리학 분석 텍스트",
+    //   data_insight: "데이터 인사이트 텍스트",
+    //   patterns: [ { title: "패턴명", body: "본문", tags: ["태그1","태그2"] } ],
+    //   verdict: "최종 진단 텍스트"
+    // }
+
+    document.getElementById('result-title').innerHTML = data.title || '분석 완료';
+    document.getElementById('result-subtitle').textContent = data.subtitle || '';
+    document.getElementById('result-saju').innerHTML = data.saju || '';
+    document.getElementById('result-psych').innerHTML = data.psych || '';
+    document.getElementById('result-data').innerHTML = data.data_insight || '';
+    document.getElementById('result-verdict').innerHTML = data.verdict || '';
+
+    // 패턴 렌더
+    if (data.patterns && data.patterns.length) {
+      const container = document.getElementById('result-patterns');
+      container.innerHTML = '<div class="pattern-title">패턴 분석</div>';
+      data.patterns.forEach((p, i) => {
+        const tags = (p.tags || []).map(t => {
+          const cls = t.includes('사주') ? 'saju' : t.includes('심리') || t.includes('편향') || t.includes('애착') ? 'psych' : 'data';
+          return `<div class="basis-tag ${cls}">${t}</div>`;
+        }).join('');
+        container.innerHTML += `
+          <div class="pattern-item">
+            <div class="pattern-num">0${i+1}</div>
+            <div class="pattern-body">
+              <p class="pattern-text">${p.body}</p>
+              <div class="pattern-basis">${tags}</div>
+            </div>
+          </div>`;
+      });
+    }
+
+    // 결과 섹션 표시
+    const resultEl = document.getElementById('result-dynamic');
+    resultEl.classList.remove('hidden');
+    resultEl.classList.add('visible');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+</script>
+</body>
+</html>
