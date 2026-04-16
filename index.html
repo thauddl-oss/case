@@ -1083,10 +1083,10 @@
   function startEmpathyCall() {
     showAnalyzingModal();
 
-    // 데이터 수집
-    const q1val = document.getElementById('q1').value.trim();
-    const q2val = document.getElementById('q2').value.trim();
-    const situation = `[지금 감정/상황/경위] ${q1val}\n\n[원하는 것 / 궁금한 것] ${q2val}`;
+    // 데이터 수집 - 줄바꿈은 공백으로 (JSON 안전성)
+    const q1val = document.getElementById('q1').value.trim().replace(/\s+/g, ' ');
+    const q2val = document.getElementById('q2').value.trim().replace(/\s+/g, ' ');
+    const situation = `[지금 감정/상황/경위] ${q1val} [원하는 것 / 궁금한 것] ${q2val}`;
 
     const payload = {
       name: document.getElementById('username').value.trim(),
