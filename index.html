@@ -1076,10 +1076,10 @@
   }
 
   // ─────────────────────────────────────────
-  // Make.com 웹훅 URL — 설정 후 교체하세요
+  // Make.com 웹훅 URL
   // ─────────────────────────────────────────
   const EMPATHY_WEBHOOK_URL = 'https://hook.eu1.make.com/oefm5f6rbiyvlhf4t6htv9fawtiwtmrt';  // 1단계: 공감+추가질문
-  const REPORT_WEBHOOK_URL = 'YOUR_REPORT_WEBHOOK_URL_HERE';    // 2단계: 상세리포트 Batch 요청
+  const REPORT_WEBHOOK_URL = 'https://hook.eu1.make.com/n5hn34sgql2tn75f1wp65o9q0bgoizjw';    // 2단계: 상세리포트 Batch 요청
 
   function startEmpathyCall() {
     showAnalyzingModal();
@@ -1176,49 +1176,28 @@
     }
     document.getElementById('privacyError2').style.display = 'none';
 
-    // 추가질문 답변 수집 (입력창 1개)
+    // 추가질문 답변 수집
     const followUpAnswer = document.getElementById('followUpInput').value.trim();
 
-    // 기존 payload에 추가 정보 합치기
+    // 최종 payload
     const finalPayload = {
       ...window._casePayload,
       phone: phone,
       follow_up_answer: followUpAnswer
     };
 
-    // 제출 버튼 비활성화
-    const btn = document.querySelector('#empathyModal .submit-btn');
-    btn.textContent = '접수 중...';
-    btn.disabled = true;
-    btn.style.opacity = '0.6';
-
-    // 테스트 모드 체크
-    const TEST_MODE = true;
-    if (TEST_MODE) {
-      setTimeout(() => showCompleteScreen(), 1200);
-      return;
-    }
-
-    // 2단계: 상세리포트 Batch 요청
+    // ★ Fire-and-forget: 응답 기다리지 않고 즉시 완료 화면
+    // Make가 접수 여부는 백그라운드에서 처리되고 카톡으로 결과 발송됨
     fetch(REPORT_WEBHOOK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(finalPayload)
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('report webhook error');
-      return res.json();
-    })
-    .then(data => {
-      showCompleteScreen();
-    })
-    .catch(err => {
-      console.error(err);
-      btn.textContent = '리포트 신청하기 →';
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      alert('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }).catch(err => {
+      console.error('background submit failed:', err);
     });
+
+    // 즉시 완료 화면 전환
+    showCompleteScreen();
   }
 
   function showCompleteScreen() {
