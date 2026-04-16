@@ -1116,6 +1116,10 @@
       return res.text();
     })
     .then(rawText => {
+      // 디버깅용 — 응답 원문 확인
+      console.log('=== RAW RESPONSE ===');
+      console.log(rawText);
+      console.log('=== END ===');
       // JSON 파싱 시도 — Claude가 큰따옴표를 사용하면 깨질 수 있음
       let data;
       try {
