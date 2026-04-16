@@ -1113,9 +1113,36 @@
     })
     .then(res => {
       if (!res.ok) throw new Error('empathy webhook error');
-      return res.json();
+      return res.text();
     })
-    .then(data => {
+    .then(rawText => {
+      // JSON 파싱 시도 — Claude가 큰따옴표를 사용하면 깨질 수 있음
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch(e) {
+        // empathy/questions 값 안의 이스케이프 안 된 큰따옴표 정제
+        let fixed = rawText;
+        // "empathy": "..." 안의 내용에서 문제되는 따옴표를 처리
+        fixed = fixed.replace(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/, (match, inner) => {
+          const escaped = inner.replace(/(?<!\\)"/g, '\\"');
+          return `"empathy": "${escaped}", "questions"`;
+        });
+        try {
+          data = JSON.parse(fixed);
+        } catch(e2) {
+          // 최후 수단: 정규식으로 직접 추출
+          const empathyMatch = rawText.match(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/);
+          const questionsMatch = rawText.match(/"questions"\s*:\s*\[([\s\S]*?)\]/);
+          if (empathyMatch && questionsMatch) {
+            const empathy = empathyMatch[1];
+            const questions = questionsMatch[1].split(/",\s*"/).map(q => q.replace(/^"|"$/g, '').trim());
+            data = { empathy, questions };
+          } else {
+            throw new Error('JSON parse failed');
+          }
+        }
+      }
       hideAnalyzingModal();
       renderEmpathyModal(data);
     })
