@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>개인정보처리방침 — CASE</title>
+<meta name="description" content="CASE · 미네컴퍼니 개인정보처리방침">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ede8;
+    --surface: #ffffff;
+    --header-bg: #f5f2ee;
+    --border: #c8c2ba;
+    --border-light: #d8d2ca;
+    --gold: #7a5818;
+    --gold-light: #9a7228;
+    --gold-dim: #a07828;
+    --text: #1a1208;
+    --text-mid: #5a5248;
+    --text-dim: #3d3228;
+    --text-faint: #9a9088;
+    --red: #a83020;
+    --red-bg: #fdf2f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif KR', serif;
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; padding: 0 20px; }
+
+  header {
+    padding: 36px 0 28px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px;
+    font-weight: 300;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: inline-block;
+    text-decoration: none;
+  }
+  .logo:hover { color: var(--gold-light); }
+  .tagline {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    font-family: 'DM Mono', monospace;
+    font-weight: 300;
+  }
+
+  .page-header { margin-bottom: 40px; text-align: center; }
+  .page-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-weight: 300;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .effective-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.15em;
+    margin-top: 16px;
+  }
+
+  .content {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    margin-bottom: 32px;
+  }
+  .intro {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.9;
+    padding-bottom: 28px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .intro strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .toc {
+    background: var(--header-bg);
+    border: 1px solid var(--border-light);
+    padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+  .toc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    font-size: 13px;
+  }
+  .toc-list li {
+    color: var(--text-dim);
+    padding: 4px 0;
+    border-bottom: 1px dotted var(--border-light);
+  }
+  .toc-list a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .toc-list a:hover { color: var(--gold); }
+  .toc-list .toc-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--gold-dim);
+    margin-right: 8px;
+  }
+
+  section.policy {
+    margin-bottom: 32px;
+    scroll-margin-top: 20px;
+  }
+  section.policy:last-child { margin-bottom: 0; }
+
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .section-body {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+  .section-body p { margin-bottom: 10px; }
+  .section-body p:last-child { margin-bottom: 0; }
+  .section-body strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .policy-list { list-style: none; padding: 0; margin-top: 8px; }
+  .policy-list li {
+    padding: 8px 0 8px 16px;
+    position: relative;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .policy-list li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .policy-list li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .policy-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .policy-table th {
+    background: var(--header-bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+  .policy-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    line-height: 1.6;
+    vertical-align: top;
+  }
+  .policy-table td:first-child {
+    background: #faf8f5;
+    font-weight: 500;
+    color: var(--text);
+    width: 28%;
+  }
+
+  .highlight-box {
+    background: #fdf8ee;
+    border-left: 3px solid var(--gold);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-dim);
+  }
+  .highlight-box strong { color: var(--text); font-weight: 600; }
+
+  .sensitive-box {
+    background: var(--red-bg);
+    border-left: 3px solid var(--red);
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #7a3020;
+  }
+  .sensitive-box strong { color: var(--red); font-weight: 600; }
+
+  .contact-box {
+    background: var(--header-bg);
+    border-left: 3px solid var(--gold-dim);
+    padding: 20px 24px;
+    margin-top: 16px;
+  }
+  .contact-box .contact-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .contact-box .contact-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+  .contact-box a { color: var(--gold); text-decoration: none; }
+  .contact-box a:hover { text-decoration: underline; }
+
+  .back-section { text-align: center; margin-bottom: 48px; }
+  .back-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { background: var(--gold); color: var(--bg); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+  }
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+    line-height: 2;
+  }
+
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+    header { padding: 28px 0 20px; margin-bottom: 32px; }
+    .logo { font-size: 26px; letter-spacing: 0.4em; }
+    .page-title { font-size: 28px; }
+    .content { padding: 32px 20px; }
+    .section-title { font-size: 15px; }
+    .section-body { font-size: 13px; }
+    .policy-table { font-size: 12px; }
+    .policy-table th, .policy-table td { padding: 8px; }
+    .policy-table td:first-child { width: 32%; }
+    .toc-list { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <a href="/" class="logo">Case</a>
+    <div class="tagline">사주 · 심리학 · 케이스 데이터 교차 분석</div>
+  </header>
+
+  <div class="page-header">
+    <div class="page-label">Privacy Policy</div>
+    <h1 class="page-title">개인정보처리방침</h1>
+    <p class="page-subtitle">
+      CASE(미네컴퍼니)는 이용자의 개인정보를 소중히 다루며,<br>
+      관련 법령과 지침을 준수합니다.
+    </p>
+    <div class="effective-date">시행일 · 2026. 01. 01.</div>
+  </div>
+
+  <div class="content">
+
+    <div class="intro">
+      <p><strong>미네컴퍼니(CASE)</strong>(이하 "회사")는 정보주체의 자유와 권리 보호를 위해 「개인정보 보호법」 및 관계 법령이 정한 바를 준수하여, 적법하게 개인정보를 처리하고 안전하게 관리하고 있습니다.</p>
+      <p style="margin-top:10px;">본 개인정보처리방침은 회사가 제공하는 <strong>CASE 분석 리포트 서비스</strong>에 적용되며, 다음의 내용을 포함합니다.</p>
+    </div>
+
+    <!-- TOC -->
+    <div class="toc">
+      <div class="toc-label">Contents</div>
+      <ul class="toc-list">
+        <li><span class="toc-num">01</span><a href="#sec01">수집 항목</a></li>
+        <li><span class="toc-num">02</span><a href="#sec02">처리 목적</a></li>
+        <li><span class="toc-num">03</span><a href="#sec03">민감정보 처리</a></li>
+        <li><span class="toc-num">04</span><a href="#sec04">보유 및 이용 기간</a></li>
+        <li><span class="toc-num">05</span><a href="#sec05">제3자 제공 및 처리위탁</a></li>
+        <li><span class="toc-num">06</span><a href="#sec06">개인정보 국외 이전</a></li>
+        <li><span class="toc-num">07</span><a href="#sec07">이용자의 권리</a></li>
+        <li><span class="toc-num">08</span><a href="#sec08">파기 절차</a></li>
+        <li><span class="toc-num">09</span><a href="#sec09">안전성 확보 조치</a></li>
+        <li><span class="toc-num">10</span><a href="#sec10">쿠키 운영</a></li>
+        <li><span class="toc-num">11</span><a href="#sec11">만 14세 미만 아동</a></li>
+        <li><span class="toc-num">12</span><a href="#sec12">광고성 정보 전송</a></li>
+        <li><span class="toc-num">13</span><a href="#sec13">동의 거부 권리</a></li>
+        <li><span class="toc-num">14</span><a href="#sec14">보호책임자 및 문의</a></li>
+        <li><span class="toc-num">15</span><a href="#sec15">권익 침해 구제</a></li>
+        <li><span class="toc-num">16</span><a href="#sec16">변경 고지</a></li>
+      </ul>
+    </div>
+
+    <!-- 1. 수집 항목 -->
+    <section class="policy" id="sec01">
+      <div class="section-num">Article 01</div>
+      <h2 class="section-title">1. 수집하는 개인정보의 항목</h2>
+      <div class="section-body">
+        <p>회사는 맞춤형 분석 리포트 제공을 위해 다음의 개인정보를 수집합니다.</p>
+        <ul class="policy-list">
+          <li><strong>필수 항목</strong> — 이름(또는 별명), 생년월일, 성별, 전화번호</li>
+          <li><strong>선택 항목</strong> — 출생시간, 달력 구분(양력/음력/윤달)</li>
+          <li><strong>분석 입력 정보</strong> — 상담 카테고리, 현재 상황 및 고민 내용, 카테고리별 추가 정보</li>
+          <li><strong>자동 수집 항목</strong> — 접속 IP, 접속 일시, 서비스 이용 기록</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 2. 처리 목적 -->
+    <section class="policy" id="sec02">
+      <div class="section-num">Article 02</div>
+      <h2 class="section-title">2. 개인정보의 처리 목적</h2>
+      <div class="section-body">
+        <p>회사는 수집한 개인정보를 다음의 목적으로만 이용하며, 목적이 변경되는 경우 사전 동의를 구합니다.</p>
+        <ul class="policy-list">
+          <li>사주 · 심리 · 케이스 데이터 기반 맞춤형 분석 리포트 생성</li>
+          <li>카카오톡 알림톡 또는 SMS를 통한 리포트 발송</li>
+          <li>서비스 개선, 부정 이용 방지, 문의 응대</li>
+          <li>법령 및 서비스 약관 이행, 분쟁 조정을 위한 기록 보존</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3. 민감정보 -->
+    <section class="policy" id="sec03">
+      <div class="section-num">Article 03</div>
+      <h2 class="section-title">3. 민감정보 및 특수정보의 처리</h2>
+      <div class="section-body">
+        <p>회사가 제공하는 서비스의 특성상, 이용자가 자발적으로 입력하는 <strong>상담 사연</strong>에는 건강 상태, 정신적 상태, 심리적 고민, 종교적 사상, 개인의 사생활 등 「개인정보 보호법」 제23조에서 정한 민감정보가 포함될 수 있습니다.</p>
+
+        <div class="sensitive-box">
+          <p><strong>민감정보 처리 원칙</strong></p>
+          <p style="margin-top:8px;">회사는 이용자가 입력한 상담 사연에 포함될 수 있는 민감정보를 다음의 원칙에 따라 처리합니다.</p>
+        </div>
+
+        <ul class="policy-list">
+          <li><strong>목적 제한</strong> — 오직 리포트 생성 목적으로만 이용하며, 다른 용도로 활용하지 않습니다</li>
+          <li><strong>최소 수집</strong> — 이용자가 자발적으로 입력한 범위 내에서만 수집하며, 추가 요구하지 않습니다</li>
+          <li><strong>분리 저장 금지</strong> — 별도의 민감정보 데이터베이스를 구축하거나 프로파일링하지 않습니다</li>
+          <li><strong>제3자 제공 금지</strong> — 서비스 제공을 위한 처리위탁 외에는 어떠한 경우에도 제3자에게 제공하지 않습니다</li>
+          <li><strong>최단 보관</strong> — 리포트 생성 완료 후 최단 기간 내 파기합니다</li>
+          <li><strong>분석적 활용 금지</strong> — 이용자 특성 분석, 마케팅 타겟팅 등 파생적 용도로 이용하지 않습니다</li>
+        </ul>
+
+        <p style="margin-top:14px;">본 리포트 서비스는 <strong>의료·심리·법률·금융 상담을 대체하지 않으며</strong>, 전문적 진단이 필요한 경우 반드시 전문가 상담을 받으시기 바랍니다.</p>
+      </div>
+    </section>
+
+    <!-- 4. 보유 기간 -->
+    <section class="policy" id="sec04">
+      <div class="section-num">Article 04</div>
+      <h2 class="section-title">4. 개인정보의 보유 및 이용 기간</h2>
+      <div class="section-body">
+        <p>회사는 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 다만, 상담 서비스의 특성상 <strong>연속성 있는 서비스 제공 및 이력 관리</strong>를 위해 아래와 같이 일정 기간 보관합니다.</p>
+        <table class="policy-table">
+          <thead>
+            <tr>
+              <th>항목</th>
+              <th>보유 기간</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>이름, 생년월일, 성별, 전화번호, 상담 입력 정보</td>
+              <td>서비스 제공 완료 후 <strong>3년</strong>까지<br><span style="font-size:12px; color:var(--text-faint);">(이용자 요청 시 즉시 삭제)</span></td>
+            </tr>
+            <tr>
+              <td>생성된 분석 리포트 파일</td>
+              <td>서비스 제공 완료 후 <strong>3년</strong>까지</td>
+            </tr>
+            <tr>
+              <td>익명 통계 정보<br><span style="font-size:12px; color:var(--text-faint);">(식별 불가)</span></td>
+              <td><strong>영구 보존</strong><br><span style="font-size:12px; color:var(--text-faint);">(서비스 개선 목적)</span></td>
+            </tr>
+            <tr>
+              <td>서비스 이용 기록(접속 로그 등)</td>
+              <td>통신비밀보호법에 따라 <strong>3개월</strong></td>
+            </tr>
+            <tr>
+              <td>부정 이용 방지를 위한 기록</td>
+              <td>최대 <strong>1년</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px; font-size:13px;">보관 기간 중이라도 이용자가 삭제를 요청하는 경우 지체 없이 파기합니다. 다만 관계 법령에 의해 보존할 필요가 있는 경우, 해당 법령에서 정한 기간 동안 보관합니다.</p>
+
+        <div class="highlight-box" style="margin-top:16px;">
+          <p><strong>익명 통계 정보의 활용 (영구 보존)</strong></p>
+          <p style="margin-top:8px;">회사는 개인을 식별할 수 없도록 익명 처리된 정보를 통계 작성, AI 분석 품질 개선, 케이스 데이터베이스 구축 등의 목적으로 <strong>기간 제한 없이 활용</strong>할 수 있습니다.</p>
+        </div>
+
+        <ul class="policy-list">
+          <li><strong>익명화 원칙</strong> — 이름, 전화번호, 정확한 생년월일 등 직접 식별자 완전 제거</li>
+          <li><strong>간접 식별자 제거</strong> — 정확한 생년월일은 연령대로, 구체적 상호명·지명 등은 제거</li>
+          <li><strong>활용 목적</strong> — AI 분석 품질 개선, 케이스 매칭 정확도 향상, 통계 생성에 한정</li>
+          <li><strong>법적 지위</strong> — 재식별이 불가능한 익명 정보는 개인정보에 해당하지 않으며 「개인정보 보호법」 제58조의2에 따라 본 법의 적용 대상이 아닙니다</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 5. 제3자 제공 및 처리위탁 -->
+    <section class="policy" id="sec05">
+      <div class="section-num">Article 05</div>
+      <h2 class="section-title">5. 개인정보의 제3자 제공 및 처리위탁</h2>
+      <div class="section-body">
+        <p>회사는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만 원활한 서비스 제공을 위해 아래와 같이 일부 업무를 외부에 위탁하고 있으며, 관련 법령에 따라 수탁자를 관리·감독합니다.</p>
+
+        <table class="policy-table">
+          <thead>
+            <tr>
+              <th>수탁자</th>
+              <th>위탁 업무</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Anthropic, PBC</td>
+              <td>AI 기반 분석 리포트 생성 (Claude API)</td>
+            </tr>
+            <tr>
+              <td>Cloudflare, Inc.</td>
+              <td>리포트 파일 호스팅 및 전송 (R2 스토리지)</td>
+            </tr>
+            <tr>
+              <td>Google LLC</td>
+              <td>이용 데이터 저장 (Google Sheets)</td>
+            </tr>
+            <tr>
+              <td>Celonis SE (Make.com)</td>
+              <td>데이터 처리 자동화</td>
+            </tr>
+            <tr>
+              <td>㈜카카오</td>
+              <td>알림톡 발송</td>
+            </tr>
+            <tr>
+              <td>Vercel, Inc.</td>
+              <td>웹사이트 호스팅</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top:12px; font-size:13px;">수탁자 변경 시 본 방침을 통해 공개합니다.</p>
+      </div>
+    </section>
+
+    <!-- 6. 국외 이전 -->
+    <section class="policy" id="sec06">
+      <div class="section-num">Article 06</div>
+      <h2 class="section-title">6. 개인정보의 국외 이전</h2>
+      <div class="section-body">
+        <p>회사는 <strong>AI 기반 분석 리포트 생성</strong> 및 <strong>리포트 파일 호스팅</strong> 등을 위해 아래와 같이 이용자의 개인정보를 국외 사업자에 이전하고 있습니다. 이용자는 본 방침 및 서비스 이용 시점의 동의를 통해 아래의 국외 이전에 동의한 것으로 봅니다.</p>
+
+        <div class="highlight-box">
+          <p><strong>국외 이전 고지사항</strong></p>
+          <p style="margin-top:8px;">「개인정보 보호법」 제28조의8에 따라 회사는 이용자의 개인정보를 국외로 이전하는 경우 아래 사항을 고지합니다.</p>
+        </div>
+
+        <table class="policy-table">
+          <thead>
+            <tr>
+              <th>이전받는 자</th>
+              <th>이전 국가</th>
+              <th>목적 및 항목</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Anthropic, PBC</td>
+              <td>미국</td>
+              <td><strong>목적:</strong> AI 분석 리포트 생성<br><strong>항목:</strong> 이름, 생년월일, 성별, 출생시간, 상담 사연 등 입력 정보<br><strong>이전 일시:</strong> 서비스 신청 시점 즉시<br><strong>이전 방법:</strong> 암호화된 API 통신 (HTTPS)<br><strong>보유 기간:</strong> Anthropic API 정책에 따라 <strong>7일</strong> (2025년 9월 14일자 개정)</td>
+            </tr>
+            <tr>
+              <td>Cloudflare, Inc.</td>
+              <td>미국</td>
+              <td><strong>목적:</strong> 리포트 파일 저장 및 전송<br><strong>항목:</strong> 생성된 리포트 HTML 파일<br><strong>이전 일시:</strong> 리포트 생성 후 즉시<br><strong>이전 방법:</strong> 암호화된 API 통신<br><strong>보유 기간:</strong> 서비스 제공 완료 후 3년</td>
+            </tr>
+            <tr>
+              <td>Google LLC</td>
+              <td>미국</td>
+              <td><strong>목적:</strong> 이용 데이터 저장<br><strong>항목:</strong> 전화번호, 이름, 상담 입력 정보<br><strong>이전 일시:</strong> 서비스 신청 시점 즉시<br><strong>이전 방법:</strong> 암호화된 API 통신<br><strong>보유 기간:</strong> 서비스 제공 완료 후 3년</td>
+            </tr>
+            <tr>
+              <td>Celonis SE</td>
+              <td>독일 (EU)</td>
+              <td><strong>목적:</strong> 데이터 처리 자동화<br><strong>항목:</strong> 이용자 입력 정보 전반<br><strong>이전 일시:</strong> 서비스 신청 시점 즉시<br><strong>이전 방법:</strong> 암호화된 API 통신<br><strong>보유 기간:</strong> 처리 완료 후 즉시 삭제</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="highlight-box" style="margin-top:16px;">
+          <p><strong>AI 학습 데이터 이용 금지</strong></p>
+          <p style="margin-top:8px;">Anthropic API 이용 약관에 따라, API를 통해 전송된 이용자의 데이터는 <strong>Anthropic의 AI 모델 학습에 사용되지 않습니다</strong>. 전송된 데이터는 리포트 생성 목적으로만 처리된 후 Anthropic의 보존 정책에 따라 삭제됩니다.</p>
+        </div>
+
+        <p style="margin-top:14px;">이용자는 국외 이전을 거부할 권리가 있습니다. 다만 국외 이전은 서비스 제공에 필수적인 사항으로, 거부 시 서비스 이용이 제한될 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- 7. 이용자의 권리 -->
+    <section class="policy" id="sec07">
+      <div class="section-num">Article 07</div>
+      <h2 class="section-title">7. 이용자 및 법정대리인의 권리와 행사 방법</h2>
+      <div class="section-body">
+        <p>이용자는 언제든지 다음의 권리를 행사할 수 있습니다.</p>
+        <ul class="policy-list">
+          <li>개인정보 <strong>열람</strong> 요구</li>
+          <li>개인정보 <strong>정정 · 삭제</strong> 요구</li>
+          <li>개인정보 <strong>처리 정지</strong> 요구</li>
+          <li>개인정보 수집 · 이용 <strong>동의 철회</strong></li>
+          <li>국외 이전 <strong>거부</strong> (서비스 이용 제한 가능)</li>
+        </ul>
+        <p style="margin-top:10px;">권리 행사는 아래 문의처를 통해 요청하실 수 있으며, 회사는 지체 없이 조치하겠습니다. 만 14세 미만 아동의 경우 법정대리인이 권리를 행사할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- 8. 파기 절차 -->
+    <section class="policy" id="sec08">
+      <div class="section-num">Article 08</div>
+      <h2 class="section-title">8. 개인정보의 파기 절차 및 방법</h2>
+      <div class="section-body">
+        <p>회사는 보유 기간이 경과하거나 처리 목적이 달성된 개인정보를 지체 없이 파기합니다.</p>
+        <ul class="policy-list">
+          <li><strong>파기 시점</strong> — 보유 기간 경과일 또는 처리 목적 달성일로부터 지체 없이</li>
+          <li><strong>전자적 파일</strong> — 복구할 수 없는 기술적 방법으로 영구 삭제</li>
+          <li><strong>종이 문서</strong> — 분쇄기로 분쇄하거나 소각 처리</li>
+          <li><strong>파기 대상</strong> — Google Sheets 저장 데이터, R2 스토리지 리포트 파일, 관련 로그</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 9. 안전성 확보 조치 -->
+    <section class="policy" id="sec09">
+      <div class="section-num">Article 09</div>
+      <h2 class="section-title">9. 개인정보의 안전성 확보 조치</h2>
+      <div class="section-body">
+        <p>회사는 이용자의 개인정보를 안전하게 관리하기 위해 다음의 조치를 취하고 있습니다.</p>
+        <ul class="policy-list">
+          <li><strong>관리적 조치</strong> — 내부관리계획 수립, 개인정보 취급자 최소화</li>
+          <li><strong>기술적 조치</strong> — 전송 구간 암호화(HTTPS/TLS), API 인증 키 관리, 접근 권한 통제</li>
+          <li><strong>물리적 조치</strong> — 클라우드 인프라 보안 정책 준수 (Cloudflare, Google, Vercel의 SOC 2 / ISO 27001 등 인증된 보안 표준)</li>
+          <li><strong>접근 통제</strong> — 개인정보 처리시스템에 대한 접근 권한을 업무 수행에 필요한 최소한의 인원으로 제한</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10. 쿠키 -->
+    <section class="policy" id="sec10">
+      <div class="section-num">Article 10</div>
+      <h2 class="section-title">10. 쿠키(Cookie)의 운영</h2>
+      <div class="section-body">
+        <p>회사의 웹사이트는 호스팅 서비스(Vercel, Cloudflare)의 기술적 필수 쿠키를 사용할 수 있습니다. 이러한 쿠키는 서비스 보안 및 정상 작동을 위한 최소한의 범위에서만 활용됩니다.</p>
+
+        <ul class="policy-list">
+          <li><strong>필수 쿠키</strong> — 서비스 제공을 위해 필수적인 쿠키 (접속 유지, 보안)</li>
+          <li><strong>마케팅 쿠키</strong> — 현재 회사는 마케팅 목적의 쿠키를 사용하지 않습니다</li>
+        </ul>
+
+        <p style="margin-top:10px;">이용자는 브라우저 설정을 통해 쿠키 저장을 거부하거나 삭제할 수 있습니다. 다만 필수 쿠키를 거부할 경우 일부 서비스 이용에 제한이 있을 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- 11. 만 14세 미만 -->
+    <section class="policy" id="sec11">
+      <div class="section-num">Article 11</div>
+      <h2 class="section-title">11. 만 14세 미만 아동의 개인정보 보호</h2>
+      <div class="section-body">
+        <p>회사는 <strong>만 14세 미만 아동의 개인정보</strong>를 보호하기 위해 다음의 조치를 취하고 있습니다.</p>
+
+        <ul class="policy-list">
+          <li>본 서비스는 원칙적으로 <strong>만 14세 이상</strong>의 이용자를 대상으로 제공됩니다</li>
+          <li>만 14세 미만 아동의 개인정보 수집 시 <strong>법정대리인의 동의</strong>를 받아야 합니다</li>
+          <li>법정대리인의 동의 없이 수집된 만 14세 미만 아동의 개인정보는 <strong>지체 없이 파기</strong>합니다</li>
+          <li>법정대리인은 아동의 개인정보 열람, 정정·삭제, 처리 정지를 요구할 수 있습니다</li>
+        </ul>
+
+        <p style="margin-top:10px;">만 14세 미만 아동의 개인정보가 동의 없이 수집되었음을 확인한 경우, 아래 문의처로 연락 주시기 바랍니다.</p>
+      </div>
+    </section>
+
+    <!-- 12. 광고성 정보 -->
+    <section class="policy" id="sec12">
+      <div class="section-num">Article 12</div>
+      <h2 class="section-title">12. 광고성 정보 전송</h2>
+      <div class="section-body">
+        <p>회사는 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」에 따라 다음과 같이 광고성 정보를 처리합니다.</p>
+
+        <ul class="policy-list">
+          <li>회사는 이용자의 <strong>별도 동의 없이는 영리 목적의 광고성 정보를 발송하지 않습니다</strong></li>
+          <li>서비스 이용과 관련된 안내(리포트 발송, 처리 현황 등)는 <strong>정보성 메시지</strong>로 발송됩니다</li>
+          <li>광고성 정보 수신에 동의하신 경우, 이용자는 언제든지 수신 거부 의사를 표시할 수 있습니다</li>
+          <li>수신 거부 의사 표시 시 회사는 지체 없이 발송을 중단합니다</li>
+        </ul>
+
+        <div class="highlight-box">
+          <p><strong>현재 발송되는 메시지 유형</strong></p>
+          <p style="margin-top:8px;">현재 회사는 서비스 이용 고객에게 <strong>리포트 발송 알림</strong> 등 정보성 메시지만 발송하며, 광고성 정보는 발송하지 않습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. 동의 거부 -->
+    <section class="policy" id="sec13">
+      <div class="section-num">Article 13</div>
+      <h2 class="section-title">13. 동의 거부 권리 및 불이익</h2>
+      <div class="section-body">
+        <p>이용자는 개인정보 수집 · 이용에 대한 동의를 거부할 권리가 있습니다. 다만 필수 항목(이름, 생년월일, 전화번호, 상담 사연 등) 및 국외 이전에 대한 동의를 거부할 경우, 서비스 제공이 제한될 수 있습니다.</p>
+        <p style="margin-top:10px;">선택 항목(출생시간 등)에 대한 동의를 거부하여도 서비스 이용에는 영향이 없습니다.</p>
+      </div>
+    </section>
+
+    <!-- 14. 보호책임자 -->
+    <section class="policy" id="sec14">
+      <div class="section-num">Article 14</div>
+      <h2 class="section-title">14. 개인정보 보호책임자 및 문의</h2>
+      <div class="section-body">
+        <p>회사는 개인정보 처리에 관한 업무를 총괄하여 책임지고, 관련 불만 처리 및 피해 구제를 위해 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
+
+        <div class="contact-box">
+          <div style="margin-bottom:12px;">
+            <div class="contact-label">개인정보 보호책임자</div>
+            <div class="contact-value">미네컴퍼니 대표</div>
+          </div>
+          <div style="margin-bottom:12px;">
+            <div class="contact-label">이메일 문의</div>
+            <div class="contact-value"><a href="mailto:thauddl@naver.com">thauddl@naver.com</a></div>
+          </div>
+          <div>
+            <div class="contact-label">처리 기간</div>
+            <div class="contact-value">영업일 기준 7일 이내 회신</div>
+          </div>
+        </div>
+
+        <p style="margin-top:14px;">이용자는 회사의 서비스를 이용하면서 발생한 모든 개인정보 보호 관련 문의, 불만 처리, 피해 구제 등에 관한 사항을 개인정보 보호책임자에게 문의할 수 있습니다.</p>
+      </div>
+    </section>
+
+    <!-- 15. 권익 침해 구제 -->
+    <section class="policy" id="sec15">
+      <div class="section-num">Article 15</div>
+      <h2 class="section-title">15. 권익 침해 구제 방법</h2>
+      <div class="section-body">
+        <p>개인정보 침해로 인한 신고 · 상담은 아래 기관에 문의할 수 있습니다.</p>
+        <ul class="policy-list">
+          <li><strong>개인정보침해신고센터</strong> — privacy.kisa.or.kr / 국번 없이 118</li>
+          <li><strong>개인정보분쟁조정위원회</strong> — kopico.go.kr / 1833-6972</li>
+          <li><strong>대검찰청 사이버수사과</strong> — spo.go.kr / 국번 없이 1301</li>
+          <li><strong>경찰청 사이버수사국</strong> — ecrm.cyber.go.kr / 국번 없이 182</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 16. 변경 고지 -->
+    <section class="policy" id="sec16">
+      <div class="section-num">Article 16</div>
+      <h2 class="section-title">16. 개인정보처리방침의 변경</h2>
+      <div class="section-body">
+        <p>본 개인정보처리방침은 법령 및 회사 정책에 따라 변경될 수 있으며, 변경 시 본 페이지를 통해 지체 없이 공지합니다. 중대한 변경이 있는 경우 서비스 내 공지 또는 이메일을 통해 최소 <strong>7일 전</strong>에 별도로 안내드립니다.</p>
+        <p style="margin-top:12px; font-family:'DM Mono', monospace; font-size:12px; color:var(--text-faint); letter-spacing:0.08em;">
+          최초 시행일: 2026년 1월 1일<br>
+          최종 개정일: 2026년 4월 21일
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="back-section">
+    <a href="/" class="back-btn">← 홈으로 돌아가기</a>
+  </div>
+
+  <footer>
+    <div class="footer-text">
+      CASE · 사주 · 심리학 · 케이스 데이터 교차 분석<br>
+      © 2026 CASE · 미네컴퍼니
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
