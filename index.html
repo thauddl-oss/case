@@ -1,24 +1,598 @@
-// ============================================================
-// CASE 랜딩페이지 — 상태별 placeholder 분기 복원 패치
-// ============================================================
-//
-// 적용 방법: 원본 index.html 에서 아래 두 곳을 교체
-//
-// [수정 1] config 객체 전체를 아래 코드로 교체
-// [수정 2] renderCategoryFields() 함수 전체를 아래 코드로 교체 +
-//          맨 아래에 updatePlaceholdersByStatus() 함수 추가
-//
-// ============================================================
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASE — 사주 · 심리학 · 케이스 데이터 교차 분석</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0ede8;
+    --surface: #ffffff;
+    --surface2: #ffffff;
+    --header-bg: #f5f2ee;
+    --border: #c8c2ba;
+    --border-light: #d8d2ca;
+    --gold: #7a5818;
+    --gold-light: #9a7228;
+    --gold-dim: #a07828;
+    --text: #1a1208;
+    --text-mid: #5a5248;
+    --text-dim: #3d3228;
+    --text-faint: #9a9088;
+    --red: #a83020;
+    --red-bg: #fdf2f0;
+    --green: #246638;
+    --green-bg: #eef7f1;
+    --blue: #1e5070;
+    --blue-bg: #eef4f9;
+    --rose: #9a3858;
+    --rose-bg: #fdf0f4;
+    --purple: #6a3a8a;
+    --purple-dim: #8a5aaa;
+    --purple-surface: #f5f0fa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Serif KR', serif; min-height: 100vh; overflow-x: hidden; font-size: 16px; }
+  body::before { display: none; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+
+  /* Header */
+  header { padding: 36px 0 28px; text-align: center; }
+  .logo { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+  .tagline { font-size: 12px; color: var(--text-dim); letter-spacing: 0.15em; font-family: 'DM Mono', monospace; font-weight: 300; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 32px 0 40px; border-bottom: 1px solid var(--border); }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; line-height: 1.55; color: var(--text); margin-bottom: 16px; }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-desc { font-size: 15px; color: var(--text-dim); line-height: 1.85; font-weight: 300; max-width: 440px; margin: 0 auto 24px; }
+
+  /* Method tags */
+  .method-tags { display: flex; justify-content: center; gap: 8px; margin-bottom: 28px; flex-wrap: wrap; }
+  .method-tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.15em; padding: 5px 12px; border: 1px solid var(--border-light); color: var(--text-faint); }
+  .method-tag.saju { border-color: var(--gold-dim); color: var(--gold); }
+  .method-tag.psych { border-color: var(--purple-dim); color: var(--purple); }
+  .method-tag.data { border-color: #2a4a5a; color: var(--blue); }
+
+  .hero-stats { display: flex; justify-content: center; gap: 32px; }
+  .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: var(--gold); line-height: 1; margin-bottom: 5px; }
+  .hero-stat-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; }
+
+  /* Topic */
+  .topic-section { padding: 40px 0 0; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.25em; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 18px; }
+  .topic-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 28px; }
+  .topic-card { background: var(--surface); border: 1px solid var(--border); padding: 14px 8px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .topic-card:hover { border-color: var(--gold-dim); background: #f5f0e8; }
+  .topic-card.active { border-color: var(--gold); background: #f5f0e8; }
+  .topic-card.active::after { content: '✓'; position: absolute; top: 5px; right: 7px; font-size: 10px; color: var(--gold); font-family: 'DM Mono', monospace; }
+  .topic-icon { font-size: 18px; margin-bottom: 5px; flex-shrink: 0; }
+  .topic-name { font-size: 13px; color: var(--text); font-weight: 400; margin-bottom: 2px; white-space: nowrap; }
+  .topic-desc { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text-faint); letter-spacing: 0.02em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .situation-select-wrap { margin-bottom: 20px; display: none; animation: fadeIn 0.3s ease; }
+  .situation-select-wrap.visible { display: block; }
+
+  /* 버튼 그룹 */
+  .cal-type-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .cal-btn { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.08em; padding: 10px 18px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all 0.15s; min-height: 44px; }
+  .cal-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+  .cal-btn.active { border-color: var(--gold); color: var(--gold); background: #f5f0e8; }
+
+  /* 세로 리스트 피커 */
+  .vlist-row { display: flex; align-items: flex-start; gap: 8px; }
+  .vlist-box { flex: 1; position: relative; }
+  .vlist-display { display: flex; align-items: center; justify-content: space-between; background: #faf8f5; border: 1px solid var(--border); padding: 12px 12px; cursor: pointer; transition: border-color 0.15s; user-select: none; min-height: 44px; }
+  .vlist-display:hover, .vlist-box.open .vlist-display { border-color: var(--gold-dim); }
+  .vlist-val { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.04em; color: var(--text-faint); }
+  .vlist-val.set { color: var(--text); }
+  .vlist-arrow { font-size: 10px; color: var(--gold); transition: transform 0.2s; }
+  .vlist-box.open .vlist-arrow { transform: rotate(180deg); }
+  .vlist-panel { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #ffffff; border: 1px solid var(--gold-dim); border-top: none; max-height: 220px; overflow-y: auto; z-index: 100; scrollbar-width: thin; scrollbar-color: var(--gold-dim) transparent; }
+  .vlist-panel::-webkit-scrollbar { width: 3px; }
+  .vlist-panel::-webkit-scrollbar-thumb { background: var(--gold-dim); }
+  .vlist-box.open .vlist-panel { display: block; animation: vlFadeIn 0.12s ease; }
+  @keyframes vlFadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+  .vlist-item { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.04em; color: var(--text-dim); padding: 12px 12px; cursor: pointer; transition: all 0.1s; border-bottom: 1px solid var(--border); }
+  .vlist-item:last-child { border-bottom: none; }
+  .vlist-item:hover { background: #f5f0e8; color: var(--text); }
+  .vlist-item.selected { color: var(--gold); background: #f5f0e8; }
+  input[type="date"] { color-scheme: light; }
+  input[type="time"]::-webkit-datetime-edit-ampm-field { display: none; }
+
+  /* 출생시간 모름 체크박스 */
+  .time-unknown-label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text-dim); letter-spacing: 0.08em; white-space: nowrap; min-height: 44px; padding: 0 4px; }
+  .situation-intro { display: none; font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--text-dim); line-height: 1.8; font-weight: 300; margin-bottom: 12px; font-style: italic; padding: 0 2px; animation: fadeIn 0.3s ease; }
+  .situation-intro.visible { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .situation-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.2em; color: var(--text-faint); text-transform: uppercase; margin-bottom: 10px; }
 
 
-// ─────────────────────────────────────────────────────────
-// [수정 1] config 객체 교체
-// ─────────────────────────────────────────────────────────
-// 찾기: "const config = {" 부터 시작하는 줄
-// 끝: "};" (mental 카테고리 닫는 괄호 + 세미콜론까지 포함)
-// 전체 블록을 아래 내용으로 교체
-// ─────────────────────────────────────────────────────────
+  /* Input */
+  .input-section { padding: 0 0 40px; }
+  .input-box { background: var(--surface); border: 1px solid var(--border); padding: 16px 18px; margin-bottom: 12px; transition: border-color 0.2s; }
+  .input-box:focus-within { border-color: var(--gold-dim); }
+  .input-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.18em; color: var(--text-dim); margin-bottom: 10px; display: block; line-height: 1.5; }
+  .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  textarea, input[type="text"] { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 15px; line-height: 1.85; resize: none; }
+  textarea::placeholder, input::placeholder { color: var(--text-faint); font-size: 14px; line-height: 1.7; }
 
+  .submit-btn { width: 100%; padding: 20px; background: var(--gold); border: none; color: var(--bg); font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.25em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: 4px; min-height: 60px; }
+  .submit-btn:hover { background: var(--gold-light); }
+  .submit-btn:disabled { cursor: not-allowed; }
+  .submit-note { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); text-align: center; margin-top: 10px; letter-spacing: 0.12em; }
+
+  .divider { border: none; border-top: 1px solid var(--border); }
+
+  /* Loading */
+  .loading { display: none; text-align: center; padding: 80px 0; }
+  .loading.active { display: block; }
+  .loading-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.3em; animation: pulse 2s ease infinite; margin-bottom: 28px; }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loading-steps { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .loading-step { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; opacity: 0; transition: opacity 0.5s; }
+  .loading-step.visible { opacity: 0.7; }
+
+  footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; margin-top: 40px; }
+  .footer-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; line-height: 2; }
+
+  .hidden { display: none !important; }
+
+  /* Required mark */
+  .required { color: var(--red); font-size: 11px; }
+
+  /* Error message */
+  .error-msg { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--red); letter-spacing: 0.08em; margin-bottom: 12px; min-height: 18px; display: none; }
+  .error-msg.visible { display: block; }
+  .input-box.error { border-color: var(--red); }
+
+  /* Select field */
+  .input-select { width: 100%; background: transparent; border: none; outline: none; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: 15px; cursor: pointer; min-height: 32px; }
+  .input-select option { background: var(--surface); color: var(--text); }
+
+  .gate-privacy { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.04em; text-align: center; line-height: 1.6; }
+
+  /* 전화번호 3칸 분리 스타일 (기존 input-box 디자인에 통일) */
+  .phone-row { display: flex; align-items: center; gap: 10px; }
+  .phone-select {
+    width: 72px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    padding: 4px 2px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3e%3cpath d='M1 1l4 4 4-4' stroke='%23a07828' stroke-width='1.5' fill='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    padding-right: 18px;
+  }
+  .phone-select:focus { outline: none; }
+  .phone-sep {
+    color: var(--text-faint);
+    font-size: 14px;
+    user-select: none;
+  }
+  .phone-input {
+    flex: 1;
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 4px 2px;
+    border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s;
+  }
+  .phone-input:focus {
+    border-bottom-color: var(--gold);
+  }
+  .phone-input::placeholder {
+    color: var(--text-faint);
+    font-weight: 300;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── 모바일 반응형 ── */
+  @media (max-width: 480px) {
+    .container { padding: 0 16px; }
+    header { padding: 28px 0 20px; }
+    .logo { font-size: 26px; letter-spacing: 0.4em; }
+    .hero { padding: 24px 0 32px; }
+    .hero-title { font-size: 22px; }
+    .hero-desc { font-size: 14px; }
+    .hero-stats { gap: 20px; }
+    .hero-stat-num { font-size: 26px; }
+    .hero-stat-label { font-size: 9px; }
+    .method-tags { gap: 6px; }
+    .method-tag { font-size: 9px; padding: 5px 10px; }
+
+    /* 토픽 카드: 4열 → 2열 */
+    .topic-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .topic-card { height: 86px; padding: 12px 8px; }
+    .topic-name { font-size: 13px; }
+    .topic-desc { font-size: 9px; }
+
+    /* 입력 row: 2열 → 1열 */
+    .input-row { grid-template-columns: 1fr; gap: 8px; }
+    .input-box { padding: 14px 16px; }
+    .input-label { font-size: 11px; }
+    textarea, input[type="text"] { font-size: 16px; } /* iOS zoom 방지 */
+    .input-select { font-size: 16px; }
+
+    /* 출생시간 피커 */
+    .vlist-row { gap: 6px; }
+    .vlist-display { padding: 12px 10px; }
+    .vlist-val { font-size: 13px; }
+    .vlist-item { font-size: 13px; padding: 12px 10px; }
+
+    /* 달력/성별 버튼 */
+    .cal-btn { font-size: 12px; padding: 10px 14px; flex: 1; text-align: center; }
+
+    /* 전화번호 모바일 */
+    .phone-row { gap: 8px; }
+    .phone-select { width: 66px; font-size: 16px; padding-right: 16px; }
+    .phone-input { font-size: 16px; }
+    .phone-sep { font-size: 12px; }
+  }
+
+  @media (max-width: 360px) {
+    .topic-grid { grid-template-columns: repeat(2, 1fr); }
+    .topic-card { height: 80px; padding: 10px 4px; }
+    .topic-name { font-size: 12px; }
+    .topic-desc { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">Case</div>
+    <div class="tagline">사주 · 심리학 · 케이스 데이터 교차 분석</div>
+  </header>
+  <div class="hero">
+    <h1 class="hero-title">좋은 운을 살리는 사람과<br>흘려보내는 사람의 차이<br><em>타이밍을 알고, 선택이 달랐을 뿐입니다</em></h1>
+    <p class="hero-desc">사주로 타이밍을 보고, 심리학으로 당신을 보고, 오늘의 선택을 드립니다</p>
+    <div class="method-tags">
+      <div class="method-tag saju">◈ 사주 · 만세력</div>
+      <div class="method-tag psych">◎ 심리학 이론</div>
+      <div class="method-tag data">→ 유사 케이스</div>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">6,800+</div><div class="hero-stat-label">유사케이스분석</div></div>
+      <div><div class="hero-stat-num">8개</div><div class="hero-stat-label">카테고리</div></div>
+      <div><div class="hero-stat-num">무료</div><div class="hero-stat-label">지금 시작</div></div>
+    </div>
+  </div>
+
+  <!-- Topic -->
+  <div class="topic-section" id="topicSection">
+    <div class="section-label">01 — 어떤 고민이에요?</div>
+    <div class="topic-grid">
+      <div class="topic-card" onclick="selectTopic('love')" id="topic-love">
+        <div class="topic-icon">♡</div>
+        <div class="topic-name">연애·결혼</div>
+        <div class="topic-desc">썸·교제·결혼 고민</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('job')" id="topic-job">
+        <div class="topic-icon">⊞</div>
+        <div class="topic-name">직업·커리어</div>
+        <div class="topic-desc">이직·취업·진로</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('business')" id="topic-business">
+        <div class="topic-icon">△</div>
+        <div class="topic-name">사업·창업</div>
+        <div class="topic-desc">창업·운영·폐업</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('study')" id="topic-study">
+        <div class="topic-icon">◎</div>
+        <div class="topic-name">학업·시험</div>
+        <div class="topic-desc">수능·고시·자격증</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('wealth')" id="topic-wealth">
+        <div class="topic-icon">◈</div>
+        <div class="topic-name">재정·재물</div>
+        <div class="topic-desc">돈·투자·부채</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('relation')" id="topic-relation">
+        <div class="topic-icon">○</div>
+        <div class="topic-name">인간관계</div>
+        <div class="topic-desc">가족·친구·갈등</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('mental')" id="topic-mental">
+        <div class="topic-icon">◇</div>
+        <div class="topic-name">심리·멘탈</div>
+        <div class="topic-desc">번아웃·무기력·우울</div>
+      </div>
+      <div class="topic-card" onclick="selectTopic('health')" id="topic-health">
+        <div class="topic-icon">⊕</div>
+        <div class="topic-name">건강</div>
+        <div class="topic-desc">피로·수면·생활습관</div>
+      </div>
+    </div>
+
+    <div class="input-section" id="inputSection" style="display:none;">
+      <div class="section-label">02 — 기본 정보</div>
+
+      <!-- 이름 -->
+      <div class="input-box" style="margin-bottom:16px;" id="field-username">
+        <label class="input-label">이름 <span class="required">*</span></label>
+        <input type="text" id="username" placeholder="예: 김소명, 별명도 괜찮아요" style="font-size:15px;">
+      </div>
+
+      <!-- 생년월일 -->
+      <div class="input-box" id="field-birthdate" style="margin-bottom:16px;">
+        <label class="input-label">생년월일 <span class="required">*</span></label>
+        <div class="vlist-row">
+          <div class="vlist-box" id="vb-year">
+            <div class="vlist-display" onclick="toggleVList('year')">
+              <span class="vlist-val" id="vv-year">년</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-year"></div>
+          </div>
+          <div class="vlist-box" id="vb-month">
+            <div class="vlist-display" onclick="toggleVList('month')">
+              <span class="vlist-val" id="vv-month">월</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-month"></div>
+          </div>
+          <div class="vlist-box" id="vb-day">
+            <div class="vlist-display" onclick="toggleVList('day')">
+              <span class="vlist-val" id="vv-day">일</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-day"></div>
+          </div>
+        </div>
+        <input type="hidden" id="birthdate" value="">
+      </div>
+
+      <!-- 출생시간 -->
+      <div class="input-box" id="field-birthtime" style="margin-bottom:16px;">
+        <label class="input-label">출생시간 <span style="font-size:9px; color:var(--text-faint); letter-spacing:0.04em;">(모름 선택 가능)</span></label>
+        <div class="vlist-row">
+          <div class="vlist-box" id="vb-hour">
+            <div class="vlist-display" onclick="toggleVList('hour')">
+              <span class="vlist-val" id="vv-hour">시</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-hour"></div>
+          </div>
+          <div class="vlist-box" id="vb-min">
+            <div class="vlist-display" onclick="toggleVList('min')">
+              <span class="vlist-val" id="vv-min">분</span>
+              <span class="vlist-arrow">▾</span>
+            </div>
+            <div class="vlist-panel" id="vl-min"></div>
+          </div>
+          <label class="time-unknown-label" style="margin-left:8px;">
+            <input type="checkbox" id="birthtimeUnknown" onchange="toggleBirthtime(this)" style="cursor:pointer; accent-color:var(--gold);">
+            <span>모름</span>
+          </label>
+        </div>
+        <input type="hidden" id="birthtime" value="">
+      </div>
+
+      <div class="input-row" style="margin-bottom:16px;">
+        <div class="input-box" id="field-gender">
+          <label class="input-label">성별 <span class="required">*</span></label>
+          <div class="cal-type-group">
+            <button type="button" class="cal-btn" id="gender-f" onclick="selectGender('여')">여자</button>
+            <button type="button" class="cal-btn" id="gender-m" onclick="selectGender('남')">남자</button>
+          </div>
+          <input type="hidden" id="gender" value="">
+        </div>
+        <div class="input-box" id="field-caltype">
+          <label class="input-label">달력 <span class="required">*</span></label>
+          <div class="cal-type-group">
+            <button type="button" class="cal-btn active" id="cal-solar" onclick="selectCalType('solar')">양력</button>
+            <button type="button" class="cal-btn" id="cal-lunar" onclick="selectCalType('lunar')">음력</button>
+            <button type="button" class="cal-btn" id="cal-leap" onclick="selectCalType('leap')">윤달</button>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" id="caltype" value="solar">
+
+      <!-- 카테고리별 추가 필드 -->
+      <div id="categoryFields"></div>
+
+      <!-- Q1/Q2 질문 영역 (카테고리 선택 후 표시) -->
+      <div id="questionFields" style="display:none; animation: fadeIn 0.3s ease;">
+        <div class="section-label" style="margin-top:8px; margin-bottom:16px;">03 — 사연 입력</div>
+        <div class="input-box" style="margin-bottom:12px;" id="field-q1">
+          <label class="input-label" id="q1Label"><span class="required">*</span></label>
+          <textarea id="q1" rows="5" placeholder=""></textarea>
+        </div>
+        <div class="input-box" style="margin-bottom:16px;" id="field-q2">
+          <label class="input-label" id="q2Label"><span class="required">*</span></label>
+          <textarea id="q2" rows="4" placeholder=""></textarea>
+        </div>
+      </div>
+
+      <!-- 유효성 에러 -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <p class="submit-note" style="text-align:center; font-family:'DM Mono',monospace; font-size:12px; color:var(--text-faint); margin-bottom:12px; letter-spacing:0.1em;">사주·심리·유사 케이스 교차 분석 · 24시간 이내 발송</p>
+      <button class="submit-btn" id="submitBtn1" onclick="validateAndProceed()">무료 분석 받기 →</button>
+      <p class="submit-note">회원가입 불필요</p>
+    </div>
+  </div>
+
+  <!-- 공감 + 추가질문 모달 -->
+  <div id="empathyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:999; padding:20px; overflow-y:auto;">
+    <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:560px; width:100%; margin:20px auto; animation: fadeIn 0.4s ease;">
+
+      <!-- 공감 영역 -->
+      <div style="border-left:4px solid var(--gold); background:var(--header-bg); padding:32px 28px;">
+        <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.3em; color:var(--gold); margin-bottom:18px;">분석을 시작할 수 있습니다</div>
+        <div id="empathyText" style="font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:300; font-style:italic; color:var(--text); line-height:1.85;"></div>
+      </div>
+
+      <!-- 추가질문 영역 -->
+      <div style="padding:28px;">
+        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.25em; color:var(--gold-dim); margin-bottom:16px; text-transform:uppercase;">더 정확한 분석을 위해</div>
+        <ul id="followUpQuestionList" style="list-style:none; padding:0; margin-bottom:20px; border-left:2px solid var(--border); padding-left:16px;"></ul>
+
+        <div class="input-box" style="margin-bottom:16px;">
+          <textarea id="followUpInput" rows="5" placeholder="알고 있는 것만 편하게 적어주세요" style="font-size:15px;"></textarea>
+        </div>
+
+        <div class="input-box" style="margin-bottom:16px;" id="field-phone">
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--text-faint); margin-bottom:10px; letter-spacing:0.05em;">리포트가 완성되면 카카오톡으로 보내드립니다</div>
+          <label class="input-label">리포트 받을 전화번호 <span class="required">*</span></label>
+          <div class="phone-row">
+            <select id="phone1" class="phone-select">
+              <option value="010">010</option>
+              <option value="011">011</option>
+              <option value="016">016</option>
+              <option value="017">017</option>
+              <option value="018">018</option>
+              <option value="019">019</option>
+            </select>
+            <span class="phone-sep">-</span>
+            <input type="tel" id="phone2" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNext(this, 'phone3')">
+            <span class="phone-sep">-</span>
+            <input type="tel" id="phone3" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNumeric(this)">
+          </div>
+          <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--text-faint); margin-top:10px; letter-spacing:0.05em;">전화번호는 리포트 발송 외 다른 용도로 사용되지 않습니다</div>
+        </div>
+
+        <div class="gate-privacy" style="margin-bottom:16px;">
+          <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; margin-bottom:8px;">
+            <input type="checkbox" id="privacyAgree2" style="margin-top:2px; accent-color:var(--gold); flex-shrink:0;">
+            <span>[필수] <a href="#" onclick="openPrivacyModal(event)" style="color:var(--gold-dim); text-decoration:underline;">개인정보처리방침</a>에 동의하며 개인정보(이름·생년월일·전화번호) 수집·이용에 동의합니다. 수집 목적: 분석 리포트 발송 및 상담 이력 관리, 보유기간: 서비스 제공 후 3년(요청 시 즉시 삭제), 익명 통계: 서비스 개선 목적 영구 활용, 제3자 제공: 없음</span>
+          </label>
+          <div id="privacyError2" style="color:var(--red); font-size:11px; margin-bottom:8px; display:none;">개인정보 수집·이용에 동의해주세요.</div>
+        </div>
+
+        <div class="error-msg" id="errorMsg2"></div>
+        <button class="submit-btn" id="submitBtn2" onclick="submitFinal()">리포트 신청하기 →</button>
+        <p class="submit-note" style="margin-top:12px;">당신만을 위한 리포트를 깊이 있게 준비합니다<br>24시간 이내 카카오톡 도착</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 분석중 모달 오버레이 -->
+  <div id="analyzingModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:1000; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:420px; width:100%; padding:48px 32px; text-align:center; animation: fadeIn 0.3s ease;">
+      <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.4em; color:var(--gold); margin-bottom:24px; text-transform:uppercase;">ANALYZING</div>
+      <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text); margin-bottom:32px; line-height:1.5;">분석 가능 여부<br>확인 중</div>
+      <div style="display:flex; justify-content:center; gap:8px; margin-bottom:24px;">
+        <div class="analyzing-dot" style="width:8px; height:8px; background:var(--gold); border-radius:50%; animation: dotPulse 1.4s infinite ease-in-out; animation-delay:0s;"></div>
+        <div class="analyzing-dot" style="width:8px; height:8px; background:var(--gold); border-radius:50%; animation: dotPulse 1.4s infinite ease-in-out; animation-delay:0.2s;"></div>
+        <div class="analyzing-dot" style="width:8px; height:8px; background:var(--gold); border-radius:50%; animation: dotPulse 1.4s infinite ease-in-out; animation-delay:0.4s;"></div>
+      </div>
+      <div id="analyzingStep" style="font-family:'DM Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:0.15em; min-height:16px;">사연 패턴 확인 중</div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes dotPulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40% { opacity: 1; transform: scale(1); }
+    }
+    #analyzingModal.active { display: flex !important; }
+  </style>
+
+  <!-- Loading -->
+  <div class="loading" id="loadingSection">
+    <div class="loading-text">사연을 읽고 있습니다</div>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1"></div>
+      <div class="loading-step" id="step2"></div>
+    </div>
+  </div>
+
+  <!-- 개인정보처리방침 모달 -->
+  <div id="privacyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:2000; padding:20px; overflow-y:auto;">
+    <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:640px; width:100%; margin:40px auto; animation: fadeIn 0.3s ease;">
+      <div style="padding:32px 28px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.3em; color:var(--gold-dim); margin-bottom:8px; text-transform:uppercase;">Privacy Policy</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:var(--text);">개인정보처리방침</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <a href="privacy.html" target="_blank" style="font-family:'DM Mono',monospace; font-size:10px; color:var(--gold-dim); letter-spacing:0.1em; text-decoration:none; border-bottom:1px solid var(--gold-dim); padding-bottom:2px;">별도 페이지 ↗</a>
+          <button onclick="closePrivacyModal()" style="background:none; border:none; font-size:24px; color:var(--text-faint); cursor:pointer; padding:4px 10px;" aria-label="닫기">×</button>
+        </div>
+      </div>
+      <div style="padding:24px 28px 32px; font-size:13px; color:var(--text-dim); line-height:1.85; font-weight:300; max-height:60vh; overflow-y:auto;">
+        <p style="margin-bottom:16px;"><strong style="color:var(--text);">CASE (미네컴퍼니)</strong>는 이용자의 개인정보를 중요시하며 관련 법령을 준수합니다.</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">1. 수집 항목</h3>
+        <p style="margin-bottom:12px;">이름, 생년월일, 성별, 출생시간(선택), 전화번호, 상담 사연</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">2. 수집 목적</h3>
+        <p style="margin-bottom:12px;">맞춤형 분석 리포트 생성 및 카카오톡/SMS를 통한 리포트 발송</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">3. 보유 기간</h3>
+        <p style="margin-bottom:12px;">서비스 제공 완료 후 3개월까지 보관하며, 이후 자동 파기합니다. 단, 관련 법령에 따라 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">4. 제3자 제공</h3>
+        <p style="margin-bottom:12px;">원칙적으로 이용자의 개인정보를 제3자에게 제공하지 않습니다. 단, 서비스 제공을 위한 처리위탁은 아래와 같습니다:</p>
+        <ul style="margin-left:16px; margin-bottom:12px;">
+          <li style="margin-bottom:4px;">Anthropic (Claude API): 분석 생성</li>
+          <li style="margin-bottom:4px;">Cloudflare: 리포트 호스팅</li>
+          <li style="margin-bottom:4px;">카카오: 알림톡 발송</li>
+        </ul>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">5. 이용자의 권리</h3>
+        <p style="margin-bottom:12px;">이용자는 언제든지 개인정보 열람, 정정, 삭제, 처리정지를 요청할 수 있습니다. 요청 시 아래 문의처로 연락 주시기 바랍니다.</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">6. 동의 거부 권리</h3>
+        <p style="margin-bottom:12px;">이용자는 개인정보 수집·이용 동의를 거부할 권리가 있습니다. 다만 동의 거부 시 서비스 이용이 제한될 수 있습니다.</p>
+
+        <h3 style="font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.15em; color:var(--gold); margin-top:20px; margin-bottom:10px; text-transform:uppercase;">7. 문의</h3>
+        <p style="margin-bottom:12px;">개인정보 관련 문의는 다음으로 연락 주시기 바랍니다.<br>이메일: <a href="mailto:thauddl@naver.com" style="color:var(--gold-dim);">thauddl@naver.com</a></p>
+
+        <p style="margin-top:20px; font-family:'DM Mono',monospace; font-size:10px; color:var(--text-faint); letter-spacing:0.08em;">시행일: 2026년 1월 1일</p>
+      </div>
+      <div style="padding:16px 28px; border-top:1px solid var(--border); text-align:center;">
+        <button onclick="closePrivacyModal()" class="submit-btn" style="padding:14px; margin:0; min-height:48px; font-size:12px;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-text">
+      CASE · 사주 · 심리학 · 케이스 데이터 교차 분석<br>
+      본 리포트는 통계적 패턴 분석이며 개인의 실제 결과를 보장하지 않습니다<br>
+      리포트 내 케이스 수치는 유사 패턴 기반 추정치이며 실제 통계 데이터가 아닙니다<br>
+      본 서비스는 의료·심리·법률·금융 상담이 아니며 전문가 상담을 대체하지 않습니다<br>
+      심리·정서적 위기 상황이라면 자살예방상담전화 1393 (24시간 무료)<br>
+      © 2026 CASE · 미네컴퍼니
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  let selectedTopic = null;
+
+  // 중복 제출 방지 플래그
+  let _empathySubmitting = false;
+  let _finalSubmitting = false;
+
+  // 카테고리 설정 (상태별 placeholder 분기 포함)
   const config = {
     love: {
       q1: { label: '지금 어떤 감정, 상황이에요? 무슨 일이 있었어요?', placeholder: '예: 직장 동료인데 사귀는 것도 아니고 아닌 것도 아닌 것 같아요. 밥도 같이 먹고 연락도 하는데 그게 다예요. 나만 이러는 건지 모르겠어요. 두 달 전에 분위기가 좋았던 날이 있었는데 그냥 넘어갔고 그 뒤로 더 어색해진 것 같기도 하고요.\n\n예: 헤어진 지 두 달 됐는데 아직도 생각나요. 헤어질 때 많이 싸웠고 내가 잘못한 것도 있는 것 같아요. 연락 끊으려 했는데 며칠 못 버텼어요. 먼저 연락했다가 후회하고 이게 반복되고 있어요.' },
@@ -193,14 +767,152 @@
     }
   };
 
+  // 세로 리스트 피커
+  const vlState = { year: null, month: null, day: null, hour: null, min: null };
 
-// ─────────────────────────────────────────────────────────
-// [수정 2] renderCategoryFields() 함수 교체 + updatePlaceholdersByStatus 신규
-// ─────────────────────────────────────────────────────────
-// 찾기: "function renderCategoryFields(topic) {"
-// 끝: 해당 함수의 닫는 "}"
-// 전체 함수를 아래 내용으로 교체하고, 바로 아래에 updatePlaceholdersByStatus 함수도 추가
-// ─────────────────────────────────────────────────────────
+  function getMaxDay(y, m) { return new Date(y || 2000, m || 1, 0).getDate(); }
+
+  function buildVList(type) {
+    const panel = document.getElementById('vl-' + type);
+    panel.innerHTML = '';
+    let items = [];
+
+    if (type === 'year') {
+      for (let y = 2025; y >= 1940; y--) items.push({ val: y, label: y + '년' });
+    } else if (type === 'month') {
+      for (let m = 1; m <= 12; m++) items.push({ val: m, label: m + '월' });
+    } else if (type === 'day') {
+      const max = getMaxDay(vlState.year, vlState.month);
+      for (let d = 1; d <= max; d++) items.push({ val: d, label: d + '일' });
+    } else if (type === 'hour') {
+      for (let h = 0; h <= 23; h++) items.push({ val: h, label: String(h).padStart(2,'0') + '시' });
+    } else if (type === 'min') {
+      for (let m = 0; m <= 59; m++) items.push({ val: m, label: String(m).padStart(2,'0') + '분' });
+    }
+
+    items.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'vlist-item' + (vlState[type] === item.val ? ' selected' : '');
+      el.textContent = item.label;
+      el.onclick = (e) => { e.stopPropagation(); selectVListVal(type, item.val); };
+      panel.appendChild(el);
+    });
+
+    setTimeout(() => {
+      const sel = panel.querySelector('.selected');
+      if (sel) sel.scrollIntoView({ block: 'center' });
+    }, 30);
+  }
+
+  function toggleVList(type) {
+    if (document.getElementById('birthtimeUnknown').checked && (type === 'hour' || type === 'min')) return;
+    const box = document.getElementById('vb-' + type);
+    const isOpen = box.classList.contains('open');
+    closeAllVLists();
+    if (!isOpen) {
+      buildVList(type);
+      box.classList.add('open');
+    }
+  }
+
+  function closeAllVLists() {
+    ['year','month','day','hour','min'].forEach(t => {
+      const box = document.getElementById('vb-' + t);
+      if (box) box.classList.remove('open');
+    });
+  }
+
+  function selectVListVal(type, val) {
+    vlState[type] = val;
+    const valEl = document.getElementById('vv-' + type);
+    if (type === 'year') valEl.textContent = val + '년';
+    else if (type === 'month') valEl.textContent = val + '월';
+    else if (type === 'day') valEl.textContent = val + '일';
+    else if (type === 'hour') valEl.textContent = String(val).padStart(2,'0') + '시';
+    else if (type === 'min') valEl.textContent = String(val).padStart(2,'0') + '분';
+    valEl.classList.add('set');
+    closeAllVLists();
+
+    if ((type === 'year' || type === 'month') && vlState.day) {
+      const max = getMaxDay(vlState.year, vlState.month);
+      if (vlState.day > max) {
+        vlState.day = max;
+        const dayEl = document.getElementById('vv-day');
+        dayEl.textContent = max + '일';
+      }
+    }
+    updateHiddenFields();
+  }
+
+  function updateHiddenFields() {
+    if (vlState.year && vlState.month && vlState.day) {
+      document.getElementById('birthdate').value =
+        vlState.year + '-' + String(vlState.month).padStart(2,'0') + '-' + String(vlState.day).padStart(2,'0');
+    }
+    if (!document.getElementById('birthtimeUnknown').checked && vlState.hour !== null && vlState.min !== null) {
+      document.getElementById('birthtime').value =
+        String(vlState.hour).padStart(2,'0') + ':' + String(vlState.min).padStart(2,'0');
+    }
+  }
+
+  function toggleBirthtime(cb) {
+    const hourBox = document.getElementById('vb-hour');
+    const minBox = document.getElementById('vb-min');
+    if (cb.checked) {
+      closeAllVLists();
+      [hourBox, minBox].forEach(b => { b.style.opacity = '0.3'; b.style.pointerEvents = 'none'; });
+      document.getElementById('birthtime').value = '모름';
+    } else {
+      [hourBox, minBox].forEach(b => { b.style.opacity = '1'; b.style.pointerEvents = 'auto'; });
+      document.getElementById('birthtime').value = '';
+      updateHiddenFields();
+    }
+  }
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.vlist-box')) closeAllVLists();
+  });
+
+  function selectGender(val) {
+    document.querySelectorAll('#gender-f, #gender-m').forEach(b => b.classList.remove('active'));
+    document.getElementById(val === '여' ? 'gender-f' : 'gender-m').classList.add('active');
+    document.getElementById('gender').value = val;
+  }
+
+  function selectCalType(type) {
+    document.querySelectorAll('.cal-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('cal-' + type).classList.add('active');
+    document.getElementById('caltype').value = type;
+  }
+
+  function selectTopic(topic) {
+    selectedTopic = topic;
+    document.querySelectorAll('.topic-card').forEach(c => c.classList.remove('active'));
+    document.getElementById('topic-' + topic).classList.add('active');
+
+    const inputSection = document.getElementById('inputSection');
+    const isFirstOpen = inputSection.style.display === 'none';
+    inputSection.style.display = 'block';
+
+    renderCategoryFields(topic);
+
+    const q = config[topic];
+    document.getElementById('q1Label').innerHTML = q.q1.label + ' <span class="required">*</span>';
+    document.getElementById('q1').placeholder = q.q1.placeholder;
+    document.getElementById('q1').value = '';
+    document.getElementById('q2Label').innerHTML = q.q2.label + ' <span class="required">*</span>';
+    document.getElementById('q2').placeholder = q.q2.placeholder;
+    document.getElementById('q2').value = '';
+    document.getElementById('questionFields').style.display = 'block';
+
+    if (isFirstOpen) {
+      setTimeout(() => {
+        inputSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+
+    clearErrors();
+  }
 
   function renderCategoryFields(topic) {
     const fields = config[topic].extraFields;
@@ -224,7 +936,6 @@
       const req = f.required ? ' <span class="required">*</span>' : ' <span style="font-size:9px;color:var(--text-faint)">(선택)</span>';
       wrap.innerHTML = `<label class="input-label">${f.label}${req}</label>${input}`;
 
-      // 두 개씩 row로 묶기
       if (i % 2 === 0 && fields[i + 1]) {
         const row = document.createElement('div');
         row.className = 'input-row';
@@ -246,10 +957,8 @@
         row.appendChild(nextWrap);
         container.appendChild(row);
       } else if (i % 2 === 0) {
-        // 홀수 마지막 필드: 단독 full-width
         container.appendChild(wrap);
       }
-      // 짝수 인덱스는 이미 위에서 처리됨
     });
 
     // ─── 상태 select 변경 시 Q1/Q2 placeholder 동적 교체 (복원 기능) ───
@@ -265,8 +974,6 @@
   }
 
   // 상태 select 값에 따라 Q1/Q2 placeholder 교체
-  // 매핑된 상태: 해당 예시로 교체
-  // 매핑 안 된 상태 / 기본값: 카테고리 기본 placeholder로 복원
   function updatePlaceholdersByStatus(topic, status) {
     const conf = config[topic];
     const q1El = document.getElementById('q1');
@@ -278,8 +985,323 @@
       q1El.placeholder = ph.q1;
       q2El.placeholder = ph.q2;
     } else {
-      // 기본값으로 복원 (상태 미선택 또는 매핑 없는 상태)
       q1El.placeholder = conf.q1.placeholder;
       q2El.placeholder = conf.q2.placeholder;
     }
   }
+
+  function clearErrors() {
+    document.querySelectorAll('.input-box.error').forEach(b => b.classList.remove('error'));
+    const msg = document.getElementById('errorMsg');
+    msg.textContent = '';
+    msg.classList.remove('visible');
+  }
+
+  function showError(msg, fieldId) {
+    const errEl = document.getElementById('errorMsg');
+    errEl.textContent = msg;
+    errEl.classList.add('visible');
+    if (fieldId) {
+      const box = document.getElementById('field-' + fieldId);
+      if (box) box.classList.add('error');
+    }
+    errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function validateAndProceed() {
+    if (_empathySubmitting) return;
+
+    clearErrors();
+
+    if (!selectedTopic) {
+      showError('분석 주제를 먼저 선택해주세요.');
+      document.getElementById('topicSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    const username = document.getElementById('username').value.trim();
+    if (!username) { showError('이름을 입력해주세요.', 'username'); return; }
+
+    const birthdate = document.getElementById('birthdate').value.trim();
+    if (!birthdate) { showError('생년월일을 선택해주세요.', 'birthdate'); return; }
+
+    const birthtimeUnknown = document.getElementById('birthtimeUnknown').checked;
+    const birthtime = birthtimeUnknown ? '모름' : document.getElementById('birthtime').value.trim();
+    if (!birthtimeUnknown && !birthtime) { showError('출생시간을 입력하거나 모름을 체크해주세요.', 'birthtime'); return; }
+
+    const gender = document.getElementById('gender').value.trim();
+    if (!gender) { showError('성별을 선택해주세요.', 'gender'); return; }
+
+    const fields = config[selectedTopic].extraFields;
+    for (const f of fields) {
+      if (!f.required) continue;
+      const el = document.getElementById(f.id);
+      if (!el) continue;
+      const val = el.value.trim();
+      if (!val || val === '') {
+        showError(`"${f.label}"을 입력해주세요.`, f.id);
+        return;
+      }
+    }
+
+    const q1 = document.getElementById('q1').value.trim();
+    const q2 = document.getElementById('q2').value.trim();
+    if (q1.length < 10) { showError('첫 번째 질문을 조금 더 써주세요. (최소 10자)', 'q1'); document.getElementById('q1').focus(); return; }
+    if (q2.length < 5) { showError('두 번째 질문에 답해주세요.', 'q2'); document.getElementById('q2').focus(); return; }
+
+    _empathySubmitting = true;
+    const btn1 = document.getElementById('submitBtn1');
+    if (btn1) {
+      btn1.disabled = true;
+      btn1.style.opacity = '0.5';
+      btn1.style.cursor = 'not-allowed';
+      btn1.textContent = '분석 준비 중...';
+    }
+
+    const TEST_MODE = false;
+    if (TEST_MODE) {
+      const usernameVal = document.getElementById('username').value.trim() || '고객';
+      showAnalyzingModal();
+      setTimeout(() => {
+        const dummyData = {
+          empathy: `${usernameVal}님,<br><br>` +
+            `지금까지 혼자 안고 있었을 겁니다.<br>` +
+            `누구한테 말하기도 애매하고, 말한다고 달라지는 것도 없을 것 같고.<br><br>` +
+            `그런데 여기까지 찾아와서 이만큼 써주신 거 — 그게 이미 첫 번째 움직임입니다.<br><br>` +
+            `이 리포트는 왜 이렇게 됐는지, 그리고 어떻게 하면 되는지를 다룹니다.<br>` +
+            `같은 패턴에서 방향을 찾은 사람들의 데이터가 있습니다. <strong>방법은 있습니다.</strong>`,
+          questions: [
+            '지금도 관련된 생각이나 행동을 하고 있나요? 얼마나 자주?',
+            '가까운 사람 중에 이 상황을 알고 있는 사람이 있나요?',
+            '혼자서 해결하려고 시도해본 적 있나요? 있다면 어떻게 됐나요?'
+          ]
+        };
+        hideAnalyzingModal();
+        renderEmpathyModal(dummyData);
+      }, 3000);
+      return;
+    }
+    startEmpathyCall();
+  }
+
+  function showAnalyzingModal() {
+    document.getElementById('analyzingModal').classList.add('active');
+    const steps = ['사연 패턴 확인 중', '사주 구조 검토 중', '케이스 매칭 확인 중'];
+    let i = 0;
+    const stepEl = document.getElementById('analyzingStep');
+    stepEl.textContent = steps[0];
+    window._analyzingInterval = setInterval(() => {
+      i = (i + 1) % steps.length;
+      stepEl.style.opacity = '0';
+      setTimeout(() => {
+        stepEl.textContent = steps[i];
+        stepEl.style.opacity = '1';
+      }, 200);
+    }, 1000);
+  }
+
+  function hideAnalyzingModal() {
+    document.getElementById('analyzingModal').classList.remove('active');
+    if (window._analyzingInterval) {
+      clearInterval(window._analyzingInterval);
+      window._analyzingInterval = null;
+    }
+  }
+
+  function renderEmpathyModal(data) {
+    document.getElementById('empathyText').innerHTML = data.empathy || '';
+    const list = document.getElementById('followUpQuestionList');
+    list.innerHTML = '';
+    (data.questions || []).forEach(q => {
+      const li = document.createElement('li');
+      li.style.cssText = 'font-size:13px; color:var(--text-dim); line-height:1.7; font-weight:300; margin-bottom:8px; padding-left:12px; position:relative;';
+      li.innerHTML = `<span style="position:absolute; left:0; color:var(--gold);">·</span>${q}`;
+      list.appendChild(li);
+    });
+    document.getElementById('empathyModal').style.display = 'block';
+  }
+
+  // ─────────────────────────────────────────
+  // Make.com 웹훅 URL
+  // ─────────────────────────────────────────
+  const EMPATHY_WEBHOOK_URL = 'https://hook.eu1.make.com/oefm5f6rbiyvlhf4t6htv9fawtiwtmrt';
+  const REPORT_WEBHOOK_URL = 'https://hook.eu1.make.com/n5hn34sgql2tn75f1wp65o9q0bgoizjw';
+
+  function startEmpathyCall() {
+    showAnalyzingModal();
+
+    const q1val = document.getElementById('q1').value.trim().replace(/\s+/g, ' ');
+    const q2val = document.getElementById('q2').value.trim().replace(/\s+/g, ' ');
+    const situation = `[지금 감정/상황/경위] ${q1val} [원하는 것 / 궁금한 것] ${q2val}`;
+
+    const payload = {
+      name: document.getElementById('username').value.trim(),
+      category: selectedTopic,
+      birthdate: document.getElementById('birthdate').value.trim(),
+      birthtime: document.getElementById('birthtimeUnknown').checked ? '모름' : document.getElementById('birthtime').value.trim(),
+      caltype: document.getElementById('caltype').value,
+      gender: document.getElementById('gender').value.trim(),
+      situation: situation,
+      extra_fields: {}
+    };
+
+    config[selectedTopic].extraFields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (el) payload.extra_fields[f.id] = el.value.trim();
+    });
+
+    window._casePayload = payload;
+
+    fetch(EMPATHY_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('empathy webhook error');
+      return res.text();
+    })
+    .then(rawText => {
+      console.log('=== RAW RESPONSE ===');
+      console.log(rawText);
+      console.log('=== END ===');
+      let data;
+      try {
+        data = JSON.parse(rawText);
+      } catch(e) {
+        let fixed = rawText;
+        fixed = fixed.replace(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/, (match, inner) => {
+          const escaped = inner.replace(/(?<!\\)"/g, '\\"');
+          return `"empathy": "${escaped}", "questions"`;
+        });
+        try {
+          data = JSON.parse(fixed);
+        } catch(e2) {
+          const empathyMatch = rawText.match(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/);
+          const questionsMatch = rawText.match(/"questions"\s*:\s*\[([\s\S]*?)\]/);
+          if (empathyMatch && questionsMatch) {
+            const empathy = empathyMatch[1];
+            const questions = questionsMatch[1].split(/",\s*"/).map(q => q.replace(/^"|"$/g, '').trim());
+            data = { empathy, questions };
+          } else {
+            throw new Error('JSON parse failed');
+          }
+        }
+      }
+      hideAnalyzingModal();
+      renderEmpathyModal(data);
+    })
+    .catch(err => {
+      console.error(err);
+      hideAnalyzingModal();
+
+      _empathySubmitting = false;
+      const btn1 = document.getElementById('submitBtn1');
+      if (btn1) {
+        btn1.disabled = false;
+        btn1.style.opacity = '1';
+        btn1.style.cursor = 'pointer';
+        btn1.textContent = '무료 분석 받기 →';
+      }
+
+      alert('분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    });
+  }
+
+  function submitFinal() {
+    if (_finalSubmitting) return;
+
+    const p1 = document.getElementById('phone1').value;
+    const p2 = document.getElementById('phone2').value.replace(/[^0-9]/g, '');
+    const p3 = document.getElementById('phone3').value.replace(/[^0-9]/g, '');
+
+    if (!p1 || !p2 || (p2.length !== 3 && p2.length !== 4) || !p3 || p3.length !== 4) {
+      const errEl = document.getElementById('errorMsg2');
+      errEl.textContent = '전화번호를 정확히 입력해주세요.';
+      errEl.classList.add('visible');
+      const focusTarget = !p2 || p2.length < 3 ? 'phone2' : 'phone3';
+      document.getElementById(focusTarget).focus();
+      return;
+    }
+
+    const phone = `${p1}-${p2}-${p3}`;
+
+    if (!document.getElementById('privacyAgree2').checked) {
+      document.getElementById('privacyError2').style.display = 'block';
+      return;
+    }
+    document.getElementById('privacyError2').style.display = 'none';
+
+    const followUpAnswer = document.getElementById('followUpInput').value.trim();
+
+    const finalPayload = {
+      ...window._casePayload,
+      phone: phone,
+      follow_up_answer: followUpAnswer
+    };
+
+    _finalSubmitting = true;
+    const btn2 = document.getElementById('submitBtn2');
+    if (btn2) {
+      btn2.disabled = true;
+      btn2.style.opacity = '0.5';
+      btn2.style.cursor = 'not-allowed';
+      btn2.textContent = '접수 중...';
+    }
+
+    fetch(REPORT_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalPayload)
+    }).catch(err => {
+      console.error('background submit failed:', err);
+    });
+
+    showCompleteScreen();
+  }
+
+  function autoPhoneNext(current, nextId) {
+    current.value = current.value.replace(/[^0-9]/g, '');
+    if (current.value.length === 4) {
+      document.getElementById(nextId).focus();
+    }
+  }
+
+  function autoPhoneNumeric(current) {
+    current.value = current.value.replace(/[^0-9]/g, '');
+  }
+
+  function openPrivacyModal(e) {
+    if (e) e.preventDefault();
+    document.getElementById('privacyModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePrivacyModal() {
+    document.getElementById('privacyModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', function(e) {
+    const modal = document.getElementById('privacyModal');
+    if (modal && e.target === modal) {
+      closePrivacyModal();
+    }
+  });
+
+  function showCompleteScreen() {
+    document.getElementById('empathyModal').innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px;">
+        <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:420px; width:100%; padding:48px 32px; text-align:center; animation: fadeIn 0.4s ease;">
+          <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.4em; color:var(--gold); margin-bottom:24px;">COMPLETE</div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--gold); margin-bottom:20px; font-weight:300;">접수 완료</div>
+          <div style="font-size:15px; color:var(--text-dim); line-height:1.85; font-weight:300;">
+            정성껏 준비해서 전해드릴게요.
+          </div>
+        </div>
+      </div>
+    `;
+  }
+</script>
+</body>
+</html>
