@@ -136,7 +136,7 @@
   .loading-step.visible { opacity: 0.7; }
 
   footer { border-top: 1px solid var(--border); padding: 32px 0; text-align: center; margin-top: 40px; }
-  .footer-text { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; line-height: 2; }
+ .footer-text { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); opacity: 0.7; letter-spacing: 0.06em; line-height: 1.9; }
 
   .hidden { display: none !important; }
 
@@ -248,6 +248,9 @@
     .phone-select { width: 66px; font-size: 16px; padding-right: 16px; }
     .phone-input { font-size: 16px; }
     .phone-sep { font-size: 12px; }
+    /* 푸터 모바일 축소 */
+    footer { padding: 24px 0; margin-top: 28px; }
+    .footer-text { font-size: 8.5px; letter-spacing: 0.04em; line-height: 1.75; }
   }
 
   @media (max-width: 360px) {
@@ -557,9 +560,7 @@
 
   <footer>
     <div class="footer-text">
-      CASE · 사주 · 케이스 데이터 교차 분석<br>
-      본 리포트는 통계적 패턴 분석이며 개인의 실제 결과를 보장하지 않습니다<br>
-      리포트 내 케이스 수치는 유사 패턴 기반 추정치이며 실제 통계 데이터가 아닙니다<br>
+      리포트 내 케이스 수치는 유사 패턴 기반 추정치이며, 개인의 실제 결과를 보장하지 않습니다<br>
       본 서비스는 의료·심리·법률·금융 상담이 아니며 전문가 상담을 대체하지 않습니다<br>
       심리·정서적 위기 상황이라면 자살예방상담전화 1393 (24시간 무료)<br>
       © 2026 CASE · 미네컴퍼니
