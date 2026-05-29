@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CASE — 사주 · 심리학 · 케이스 데이터 교차 분석</title>
+<title>CASE — 사주 · 케이스 데이터 교차 분석</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -41,12 +41,12 @@
 
   /* Header */
   header { padding: 36px 0 28px; text-align: center; }
-  .logo { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 300; letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
+  .logo { font-family: 'Cormorant Garamond', 'Noto Serif KR', serif; font-size: 30px; font-weight: 300; letter-spacing: 0.5em; color: var(--gold); text-transform: uppercase; margin-bottom: 10px; }
   .tagline { font-size: 12px; color: var(--text-dim); letter-spacing: 0.15em; font-family: 'DM Mono', monospace; font-weight: 300; }
 
   /* Hero */
   .hero { text-align: center; padding: 32px 0 40px; border-bottom: 1px solid var(--border); }
-  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; line-height: 1.55; color: var(--text); margin-bottom: 16px; }
+  .hero-title { font-family: 'Cormorant Garamond', 'Noto Serif KR', serif; font-size: 26px; font-weight: 300; line-height: 1.55; color: var(--text); margin-bottom: 16px; }
   .hero-title em { font-style: italic; color: var(--gold); }
   .hero-desc { font-size: 15px; color: var(--text-dim); line-height: 1.85; font-weight: 300; max-width: 440px; margin: 0 auto 24px; }
 
@@ -58,7 +58,7 @@
   .method-tag.data { border-color: #2a4a5a; color: var(--blue); }
 
   .hero-stats { display: flex; justify-content: center; gap: 32px; }
-  .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 600; color: var(--gold); line-height: 1; margin-bottom: 5px; }
+  .hero-stat-num { font-family: 'Cormorant Garamond', 'Noto Serif KR', serif; font-size: 30px; font-weight: 600; color: var(--gold); line-height: 1; margin-bottom: 5px; }
   .hero-stat-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-faint); letter-spacing: 0.15em; }
 
   /* Topic */
@@ -263,14 +263,13 @@
 
   <header>
     <div class="logo">Case</div>
-    <div class="tagline">사주 · 심리학 · 케이스 데이터 교차 분석</div>
+    <div class="tagline">사주 · 케이스 데이터 교차 분석</div>
   </header>
   <div class="hero">
     <h1 class="hero-title">좋은 운을 살리는 사람과<br>흘려보내는 사람의 차이<br><em>타이밍을 알고, 선택이 달랐을 뿐입니다</em></h1>
-    <p class="hero-desc">사주로 타이밍을 보고, 심리학으로 당신을 보고, 오늘의 선택을 드립니다</p>
+    <p class="hero-desc">사주로 타이밍을 보고, 비슷한 케이스에서 길을 찾고, 오늘의 선택을 드립니다</p>
     <div class="method-tags">
       <div class="method-tag saju">◈ 사주 · 만세력</div>
-      <div class="method-tag psych">◎ 심리학 이론</div>
       <div class="method-tag data">→ 유사 케이스</div>
     </div>
     <div class="hero-stats">
@@ -429,65 +428,49 @@
       <!-- 유효성 에러 -->
       <div class="error-msg" id="errorMsg"></div>
 
-      <p class="submit-note" style="text-align:center; font-family:'DM Mono',monospace; font-size:12px; color:var(--text-faint); margin-bottom:12px; letter-spacing:0.1em;">사주·심리·유사 케이스 교차 분석 · 24시간 이내 발송</p>
+      <p class="submit-note" style="text-align:center; font-family:'DM Mono',monospace; font-size:12px; color:var(--text-faint); margin-bottom:12px; letter-spacing:0.1em;">사주·유사 케이스 교차 분석 · 24시간 이내 발송</p>
       <button class="submit-btn" id="submitBtn1" onclick="validateAndProceed()">무료 분석 받기 →</button>
       <p class="submit-note">회원가입 불필요</p>
     </div>
   </div>
 
-  <!-- 공감 + 추가질문 모달 -->
-  <div id="empathyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:999; padding:20px; overflow-y:auto;">
-    <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:560px; width:100%; margin:20px auto; animation: fadeIn 0.4s ease;">
-
-      <!-- 공감 영역 -->
-      <div style="border-left:4px solid var(--gold); background:var(--header-bg); padding:32px 28px;">
-        <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.3em; color:var(--gold); margin-bottom:18px;">분석을 시작할 수 있습니다</div>
-        <div id="empathyText" style="font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:300; font-style:italic; color:var(--text); line-height:1.85;"></div>
+<!-- 전화번호 + 동의 게이트 -->
+<div id="empathyModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:999; padding:20px; overflow-y:auto;">
+  <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:480px; width:100%; margin:40px auto; animation: fadeIn 0.4s ease;">
+    <div style="border-left:4px solid var(--gold); background:var(--header-bg); padding:28px 28px 24px;">
+      <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.3em; color:var(--gold); margin-bottom:12px;">분석을 시작할 수 있습니다</div>
+      <div style="font-family:'Cormorant Garamond','Noto Serif KR',serif; font-size:18px; font-weight:300; color:var(--text); line-height:1.6;">리포트가 완성되면<br>카카오톡으로 보내드립니다</div>
+    </div>
+    <div style="padding:28px;">
+      <div class="input-box" style="margin-bottom:16px;" id="field-phone">
+        <label class="input-label">리포트 받을 전화번호 <span class="required">*</span></label>
+        <div class="phone-row">
+          <select id="phone1" class="phone-select">
+            <option value="010">010</option><option value="011">011</option><option value="016">016</option>
+            <option value="017">017</option><option value="018">018</option><option value="019">019</option>
+          </select>
+          <span class="phone-sep">-</span>
+          <input type="tel" id="phone2" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNext(this, 'phone3')">
+          <span class="phone-sep">-</span>
+          <input type="tel" id="phone3" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNumeric(this)">
+        </div>
+        <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--text-faint); margin-top:10px; letter-spacing:0.05em;">전화번호는 리포트 발송 외 다른 용도로 사용되지 않습니다</div>
       </div>
 
-      <!-- 추가질문 영역 -->
-      <div style="padding:28px;">
-        <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.25em; color:var(--gold-dim); margin-bottom:16px; text-transform:uppercase;">더 정확한 분석을 위해</div>
-        <ul id="followUpQuestionList" style="list-style:none; padding:0; margin-bottom:20px; border-left:2px solid var(--border); padding-left:16px;"></ul>
-
-        <div class="input-box" style="margin-bottom:16px;">
-          <textarea id="followUpInput" rows="5" placeholder="알고 있는 것만 편하게 적어주세요" style="font-size:15px;"></textarea>
-        </div>
-
-        <div class="input-box" style="margin-bottom:16px;" id="field-phone">
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--text-faint); margin-bottom:10px; letter-spacing:0.05em;">리포트가 완성되면 카카오톡으로 보내드립니다</div>
-          <label class="input-label">리포트 받을 전화번호 <span class="required">*</span></label>
-          <div class="phone-row">
-            <select id="phone1" class="phone-select">
-              <option value="010">010</option>
-              <option value="011">011</option>
-              <option value="016">016</option>
-              <option value="017">017</option>
-              <option value="018">018</option>
-              <option value="019">019</option>
-            </select>
-            <span class="phone-sep">-</span>
-            <input type="tel" id="phone2" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNext(this, 'phone3')">
-            <span class="phone-sep">-</span>
-            <input type="tel" id="phone3" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="0000" class="phone-input" oninput="autoPhoneNumeric(this)">
-          </div>
-          <div style="font-family:'DM Mono',monospace; font-size:9px; color:var(--text-faint); margin-top:10px; letter-spacing:0.05em;">전화번호는 리포트 발송 외 다른 용도로 사용되지 않습니다</div>
-        </div>
-
-        <div class="gate-privacy" style="margin-bottom:16px;">
-          <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; margin-bottom:8px;">
-            <input type="checkbox" id="privacyAgree2" style="margin-top:2px; accent-color:var(--gold); flex-shrink:0;">
-            <span>[필수] <a href="#" onclick="openPrivacyModal(event)" style="color:var(--gold-dim); text-decoration:underline;">개인정보처리방침</a>에 동의하며 개인정보(이름·생년월일·전화번호) 수집·이용에 동의합니다. 수집 목적: 분석 리포트 발송 및 상담 이력 관리, 보유기간: 서비스 제공 후 3년(요청 시 즉시 삭제), 익명 통계: 서비스 개선 목적 영구 활용, 제3자 제공: 없음</span>
-          </label>
-          <div id="privacyError2" style="color:var(--red); font-size:11px; margin-bottom:8px; display:none;">개인정보 수집·이용에 동의해주세요.</div>
-        </div>
-
-        <div class="error-msg" id="errorMsg2"></div>
-        <button class="submit-btn" id="submitBtn2" onclick="submitFinal()">리포트 신청하기 →</button>
-        <p class="submit-note" style="margin-top:12px;">당신만을 위한 리포트를 깊이 있게 준비합니다<br>24시간 이내 카카오톡 도착</p>
+      <div class="gate-privacy" style="margin-bottom:16px;">
+        <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer; margin-bottom:8px;">
+          <input type="checkbox" id="privacyAgree2" style="margin-top:2px; accent-color:var(--gold); flex-shrink:0;">
+          <span>[필수] <a href="#" onclick="openPrivacyModal(event)" style="color:var(--gold-dim); text-decoration:underline;">개인정보처리방침</a>에 동의하며 개인정보(이름·생년월일·전화번호) 수집·이용에 동의합니다. 수집 목적: 분석 리포트 발송 및 상담 이력 관리, 보유기간: 서비스 제공 후 3년(요청 시 즉시 삭제), 익명 통계: 서비스 개선 목적 영구 활용, 제3자 제공: 없음</span>
+        </label>
+        <div id="privacyError2" style="color:var(--red); font-size:11px; margin-bottom:8px; display:none;">개인정보 수집·이용에 동의해주세요.</div>
       </div>
+
+      <div class="error-msg" id="errorMsg2"></div>
+      <button class="submit-btn" id="submitBtn2" onclick="submitFinal()">리포트 신청하기 →</button>
+      <p class="submit-note" style="margin-top:12px;">당신만을 위한 리포트를 깊이 있게 준비합니다<br>24시간 이내 카카오톡 도착</p>
     </div>
   </div>
+</div>
 
   <hr class="divider">
 
@@ -495,7 +478,7 @@
   <div id="analyzingModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(26,18,8,0.85); z-index:1000; align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:420px; width:100%; padding:48px 32px; text-align:center; animation: fadeIn 0.3s ease;">
       <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.4em; color:var(--gold); margin-bottom:24px; text-transform:uppercase;">ANALYZING</div>
-      <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:300; color:var(--text); margin-bottom:32px; line-height:1.5;">분석 가능 여부<br>확인 중</div>
+      <div style="font-family:'Cormorant Garamond','Noto Serif KR',serif; font-size:22px; font-weight:300; color:var(--text); margin-bottom:32px; line-height:1.5;">분석 가능 여부<br>확인 중</div>
       <div style="display:flex; justify-content:center; gap:8px; margin-bottom:24px;">
         <div class="analyzing-dot" style="width:8px; height:8px; background:var(--gold); border-radius:50%; animation: dotPulse 1.4s infinite ease-in-out; animation-delay:0s;"></div>
         <div class="analyzing-dot" style="width:8px; height:8px; background:var(--gold); border-radius:50%; animation: dotPulse 1.4s infinite ease-in-out; animation-delay:0.2s;"></div>
@@ -528,7 +511,7 @@
       <div style="padding:32px 28px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
         <div>
           <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.3em; color:var(--gold-dim); margin-bottom:8px; text-transform:uppercase;">Privacy Policy</div>
-          <div style="font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:var(--text);">개인정보처리방침</div>
+          <div style="font-family:'Cormorant Garamond','Noto Serif KR',serif; font-size:22px; font-weight:400; color:var(--text);">개인정보처리방침</div>
         </div>
         <div style="display:flex; align-items:center; gap:12px;">
           <a href="privacy.html" target="_blank" style="font-family:'DM Mono',monospace; font-size:10px; color:var(--gold-dim); letter-spacing:0.1em; text-decoration:none; border-bottom:1px solid var(--gold-dim); padding-bottom:2px;">별도 페이지 ↗</a>
@@ -574,7 +557,7 @@
 
   <footer>
     <div class="footer-text">
-      CASE · 사주 · 심리학 · 케이스 데이터 교차 분석<br>
+      CASE · 사주 · 케이스 데이터 교차 분석<br>
       본 리포트는 통계적 패턴 분석이며 개인의 실제 결과를 보장하지 않습니다<br>
       리포트 내 케이스 수치는 유사 패턴 기반 추정치이며 실제 통계 데이터가 아닙니다<br>
       본 서비스는 의료·심리·법률·금융 상담이 아니며 전문가 상담을 대체하지 않습니다<br>
@@ -1158,82 +1141,10 @@ const config = {
     errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  function validateAndProceed() {
-    if (_empathySubmitting) return;
+  // 웹훅 URL (report만 사용)
+  const REPORT_WEBHOOK_URL = 'https://hook.eu1.make.com/n5hn34sgql2tn75f1wp65o9q0bgoizjw';
 
-    clearErrors();
-
-    if (!selectedTopic) {
-      showError('분석 주제를 먼저 선택해주세요.');
-      document.getElementById('topicSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      return;
-    }
-
-    const username = document.getElementById('username').value.trim();
-    if (!username) { showError('이름을 입력해주세요.', 'username'); return; }
-
-    const birthdate = document.getElementById('birthdate').value.trim();
-    if (!birthdate) { showError('생년월일을 선택해주세요.', 'birthdate'); return; }
-
-    const birthtimeUnknown = document.getElementById('birthtimeUnknown').checked;
-    const birthtime = birthtimeUnknown ? '모름' : document.getElementById('birthtime').value.trim();
-    if (!birthtimeUnknown && !birthtime) { showError('출생시간을 입력하거나 모름을 체크해주세요.', 'birthtime'); return; }
-
-    const gender = document.getElementById('gender').value.trim();
-    if (!gender) { showError('성별을 선택해주세요.', 'gender'); return; }
-
-    const fields = config[selectedTopic].extraFields;
-    for (const f of fields) {
-      if (!f.required) continue;
-      const el = document.getElementById(f.id);
-      if (!el) continue;
-      const val = el.value.trim();
-      if (!val || val === '') {
-        showError(`"${f.label}"을 입력해주세요.`, f.id);
-        return;
-      }
-    }
-
-    const q1 = document.getElementById('q1').value.trim();
-    const q2 = document.getElementById('q2').value.trim();
-    if (q1.length < 10) { showError('첫 번째 질문을 조금 더 써주세요. (최소 10자)', 'q1'); document.getElementById('q1').focus(); return; }
-    if (q2.length < 5) { showError('두 번째 질문에 답해주세요.', 'q2'); document.getElementById('q2').focus(); return; }
-
-    _empathySubmitting = true;
-    const btn1 = document.getElementById('submitBtn1');
-    if (btn1) {
-      btn1.disabled = true;
-      btn1.style.opacity = '0.5';
-      btn1.style.cursor = 'not-allowed';
-      btn1.textContent = '분석 준비 중...';
-    }
-
-    const TEST_MODE = false;
-    if (TEST_MODE) {
-      const usernameVal = document.getElementById('username').value.trim() || '고객';
-      showAnalyzingModal();
-      setTimeout(() => {
-        const dummyData = {
-          empathy: `${usernameVal}님,<br><br>` +
-            `지금까지 혼자 안고 있었을 겁니다.<br>` +
-            `누구한테 말하기도 애매하고, 말한다고 달라지는 것도 없을 것 같고.<br><br>` +
-            `그런데 여기까지 찾아와서 이만큼 써주신 거 — 그게 이미 첫 번째 움직임입니다.<br><br>` +
-            `이 리포트는 왜 이렇게 됐는지, 그리고 어떻게 하면 되는지를 다룹니다.<br>` +
-            `같은 패턴에서 방향을 찾은 사람들의 데이터가 있습니다. <strong>방법은 있습니다.</strong>`,
-          questions: [
-            '지금도 관련된 생각이나 행동을 하고 있나요? 얼마나 자주?',
-            '가까운 사람 중에 이 상황을 알고 있는 사람이 있나요?',
-            '혼자서 해결하려고 시도해본 적 있나요? 있다면 어떻게 됐나요?'
-          ]
-        };
-        hideAnalyzingModal();
-        renderEmpathyModal(dummyData);
-      }, 3000);
-      return;
-    }
-    startEmpathyCall();
-  }
-
+  // 분석 가능 여부 모달 (웹훅 없이 연출만)
   function showAnalyzingModal() {
     document.getElementById('analyzingModal').classList.add('active');
     const steps = ['사연 패턴 확인 중', '사주 구조 검토 중', '케이스 매칭 확인 중'];
@@ -1243,172 +1154,116 @@ const config = {
     window._analyzingInterval = setInterval(() => {
       i = (i + 1) % steps.length;
       stepEl.style.opacity = '0';
-      setTimeout(() => {
-        stepEl.textContent = steps[i];
-        stepEl.style.opacity = '1';
-      }, 200);
+      setTimeout(() => { stepEl.textContent = steps[i]; stepEl.style.opacity = '1'; }, 200);
     }, 1000);
   }
 
   function hideAnalyzingModal() {
     document.getElementById('analyzingModal').classList.remove('active');
-    if (window._analyzingInterval) {
-      clearInterval(window._analyzingInterval);
-      window._analyzingInterval = null;
-    }
+    if (window._analyzingInterval) { clearInterval(window._analyzingInterval); window._analyzingInterval = null; }
+  }
+  
+function validateAndProceed() {
+  if (_empathySubmitting) return;
+  clearErrors();
+
+  if (!selectedTopic) {
+    showError('분석 주제를 먼저 선택해주세요.');
+    document.getElementById('topicSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
+  const username = document.getElementById('username').value.trim();
+  if (!username) { showError('이름을 입력해주세요.', 'username'); return; }
+  const birthdate = document.getElementById('birthdate').value.trim();
+  if (!birthdate) { showError('생년월일을 선택해주세요.', 'birthdate'); return; }
+  const birthtimeUnknown = document.getElementById('birthtimeUnknown').checked;
+  const birthtime = birthtimeUnknown ? '모름' : document.getElementById('birthtime').value.trim();
+  if (!birthtimeUnknown && !birthtime) { showError('출생시간을 입력하거나 모름을 체크해주세요.', 'birthtime'); return; }
+  const gender = document.getElementById('gender').value.trim();
+  if (!gender) { showError('성별을 선택해주세요.', 'gender'); return; }
+
+  const fields = config[selectedTopic].extraFields;
+  for (const f of fields) {
+    if (!f.required) continue;
+    const el = document.getElementById(f.id);
+    if (!el) continue;
+    if (!el.value.trim()) { showError(`"${f.label}"을 입력해주세요.`, f.id); return; }
   }
 
-  function renderEmpathyModal(data) {
-    document.getElementById('empathyText').innerHTML = data.empathy || '';
-    const list = document.getElementById('followUpQuestionList');
-    list.innerHTML = '';
-    (data.questions || []).forEach(q => {
-      const li = document.createElement('li');
-      li.style.cssText = 'font-size:13px; color:var(--text-dim); line-height:1.7; font-weight:300; margin-bottom:8px; padding-left:12px; position:relative;';
-      li.innerHTML = `<span style="position:absolute; left:0; color:var(--gold);">·</span>${q}`;
-      list.appendChild(li);
-    });
+  const q1 = document.getElementById('q1').value.trim();
+  const q2 = document.getElementById('q2').value.trim();
+  if (q1.length < 10) { showError('첫 번째 질문을 조금 더 써주세요. (최소 10자)', 'q1'); document.getElementById('q1').focus(); return; }
+  if (q2.length < 5) { showError('두 번째 질문에 답해주세요.', 'q2'); document.getElementById('q2').focus(); return; }
+
+  // ── 검증 통과: payload 저장 → 분석 연출(웹훅X) → 전화번호 게이트 ──
+  _empathySubmitting = true;
+  const btn1 = document.getElementById('submitBtn1');
+  if (btn1) { btn1.disabled = true; btn1.style.opacity = '0.5'; btn1.style.cursor = 'not-allowed'; btn1.textContent = '분석 준비 중...'; }
+
+  const q1val = q1.replace(/\s+/g, ' ');
+  const q2val = q2.replace(/\s+/g, ' ');
+  const situation = `[지금 감정/상황/경위] ${q1val} [원하는 것 / 궁금한 것] ${q2val}`;
+  const payload = {
+    name: username,
+    category: selectedTopic,
+    birthdate: birthdate,
+    birthtime: birthtime,
+    caltype: document.getElementById('caltype').value,
+    gender: gender,
+    situation: situation,
+    extra_fields: {}
+  };
+  fields.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el) payload.extra_fields[f.id] = el.value.trim();
+  });
+  window._casePayload = payload;
+
+  showAnalyzingModal();
+  setTimeout(() => {
+    hideAnalyzingModal();
     document.getElementById('empathyModal').style.display = 'block';
+    _empathySubmitting = false;
+    if (btn1) { btn1.disabled = false; btn1.style.opacity = '1'; btn1.style.cursor = 'pointer'; btn1.textContent = '무료 분석 받기 →'; }
+  }, 2500);
+}
+
+function submitFinal() {
+  if (_finalSubmitting) return;
+
+  const p1 = document.getElementById('phone1').value;
+  const p2 = document.getElementById('phone2').value.replace(/[^0-9]/g, '');
+  const p3 = document.getElementById('phone3').value.replace(/[^0-9]/g, '');
+
+  if (!p1 || !p2 || (p2.length !== 3 && p2.length !== 4) || !p3 || p3.length !== 4) {
+    const errEl = document.getElementById('errorMsg2');
+    errEl.textContent = '전화번호를 정확히 입력해주세요.';
+    errEl.classList.add('visible');
+    document.getElementById(!p2 || p2.length < 3 ? 'phone2' : 'phone3').focus();
+    return;
   }
+  const phone = `${p1}-${p2}-${p3}`;
 
-  // ─────────────────────────────────────────
-  // Make.com 웹훅 URL
-  // ─────────────────────────────────────────
-  const EMPATHY_WEBHOOK_URL = 'https://hook.eu1.make.com/oefm5f6rbiyvlhf4t6htv9fawtiwtmrt';
-  const REPORT_WEBHOOK_URL = 'https://hook.eu1.make.com/n5hn34sgql2tn75f1wp65o9q0bgoizjw';
-
-  function startEmpathyCall() {
-    showAnalyzingModal();
-
-    const q1val = document.getElementById('q1').value.trim().replace(/\s+/g, ' ');
-    const q2val = document.getElementById('q2').value.trim().replace(/\s+/g, ' ');
-    const situation = `[지금 감정/상황/경위] ${q1val} [원하는 것 / 궁금한 것] ${q2val}`;
-
-    const payload = {
-      name: document.getElementById('username').value.trim(),
-      category: selectedTopic,
-      birthdate: document.getElementById('birthdate').value.trim(),
-      birthtime: document.getElementById('birthtimeUnknown').checked ? '모름' : document.getElementById('birthtime').value.trim(),
-      caltype: document.getElementById('caltype').value,
-      gender: document.getElementById('gender').value.trim(),
-      situation: situation,
-      extra_fields: {}
-    };
-
-    config[selectedTopic].extraFields.forEach(f => {
-      const el = document.getElementById(f.id);
-      if (el) payload.extra_fields[f.id] = el.value.trim();
-    });
-
-    window._casePayload = payload;
-
-    fetch(EMPATHY_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('empathy webhook error');
-      return res.text();
-    })
-    .then(rawText => {
-      console.log('=== RAW RESPONSE ===');
-      console.log(rawText);
-      console.log('=== END ===');
-      let data;
-      try {
-        data = JSON.parse(rawText);
-      } catch(e) {
-        let fixed = rawText;
-        fixed = fixed.replace(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/, (match, inner) => {
-          const escaped = inner.replace(/(?<!\\)"/g, '\\"');
-          return `"empathy": "${escaped}", "questions"`;
-        });
-        try {
-          data = JSON.parse(fixed);
-        } catch(e2) {
-          const empathyMatch = rawText.match(/"empathy"\s*:\s*"([\s\S]*?)"\s*,\s*"questions"/);
-          const questionsMatch = rawText.match(/"questions"\s*:\s*\[([\s\S]*?)\]/);
-          if (empathyMatch && questionsMatch) {
-            const empathy = empathyMatch[1];
-            const questions = questionsMatch[1].split(/",\s*"/).map(q => q.replace(/^"|"$/g, '').trim());
-            data = { empathy, questions };
-          } else {
-            throw new Error('JSON parse failed');
-          }
-        }
-      }
-      hideAnalyzingModal();
-      renderEmpathyModal(data);
-    })
-    .catch(err => {
-      console.error(err);
-      hideAnalyzingModal();
-
-      _empathySubmitting = false;
-      const btn1 = document.getElementById('submitBtn1');
-      if (btn1) {
-        btn1.disabled = false;
-        btn1.style.opacity = '1';
-        btn1.style.cursor = 'pointer';
-        btn1.textContent = '무료 분석 받기 →';
-      }
-
-      alert('분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-    });
+  if (!document.getElementById('privacyAgree2').checked) {
+    document.getElementById('privacyError2').style.display = 'block';
+    return;
   }
+  document.getElementById('privacyError2').style.display = 'none';
 
-  function submitFinal() {
-    if (_finalSubmitting) return;
+  const finalPayload = { ...window._casePayload, phone: phone };
 
-    const p1 = document.getElementById('phone1').value;
-    const p2 = document.getElementById('phone2').value.replace(/[^0-9]/g, '');
-    const p3 = document.getElementById('phone3').value.replace(/[^0-9]/g, '');
+  _finalSubmitting = true;
+  const btn2 = document.getElementById('submitBtn2');
+  if (btn2) { btn2.disabled = true; btn2.style.opacity = '0.5'; btn2.style.cursor = 'not-allowed'; btn2.textContent = '접수 중...'; }
 
-    if (!p1 || !p2 || (p2.length !== 3 && p2.length !== 4) || !p3 || p3.length !== 4) {
-      const errEl = document.getElementById('errorMsg2');
-      errEl.textContent = '전화번호를 정확히 입력해주세요.';
-      errEl.classList.add('visible');
-      const focusTarget = !p2 || p2.length < 3 ? 'phone2' : 'phone3';
-      document.getElementById(focusTarget).focus();
-      return;
-    }
+  fetch(REPORT_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(finalPayload)
+  }).catch(err => console.error('background submit failed:', err));
 
-    const phone = `${p1}-${p2}-${p3}`;
-
-    if (!document.getElementById('privacyAgree2').checked) {
-      document.getElementById('privacyError2').style.display = 'block';
-      return;
-    }
-    document.getElementById('privacyError2').style.display = 'none';
-
-    const followUpAnswer = document.getElementById('followUpInput').value.trim();
-
-    const finalPayload = {
-      ...window._casePayload,
-      phone: phone,
-      follow_up_answer: followUpAnswer
-    };
-
-    _finalSubmitting = true;
-    const btn2 = document.getElementById('submitBtn2');
-    if (btn2) {
-      btn2.disabled = true;
-      btn2.style.opacity = '0.5';
-      btn2.style.cursor = 'not-allowed';
-      btn2.textContent = '접수 중...';
-    }
-
-    fetch(REPORT_WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(finalPayload)
-    }).catch(err => {
-      console.error('background submit failed:', err);
-    });
-
-    showCompleteScreen();
-  }
+  showCompleteScreen();
+}
 
   function autoPhoneNext(current, nextId) {
     current.value = current.value.replace(/[^0-9]/g, '');
@@ -1444,7 +1299,7 @@ const config = {
       <div style="display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px;">
         <div style="background:var(--surface); border:1px solid var(--gold-dim); max-width:420px; width:100%; padding:48px 32px; text-align:center; animation: fadeIn 0.4s ease;">
           <div style="font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.4em; color:var(--gold); margin-bottom:24px;">COMPLETE</div>
-          <div style="font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--gold); margin-bottom:20px; font-weight:300;">접수 완료</div>
+          <div style="font-family:'Cormorant Garamond','Noto Serif KR',serif; font-size:26px; color:var(--gold); margin-bottom:20px; font-weight:300;">접수 완료</div>
           <div style="font-size:15px; color:var(--text-dim); line-height:1.85; font-weight:300;">
             분석을 시작하겠습니다.
           </div>
