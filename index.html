@@ -368,26 +368,46 @@
 
       <!-- 출생시간 -->
       <div class="input-box" id="field-birthtime" style="margin-bottom:16px;">
-        <label class="input-label">출생시간 <span style="font-size:9px; color:var(--text-faint); letter-spacing:0.04em;">(모름 선택 가능)</span></label>
-        <div class="vlist-row">
-          <div class="vlist-box" id="vb-hour">
-            <div class="vlist-display" onclick="toggleVList('hour')">
-              <span class="vlist-val" id="vv-hour">시</span>
-              <span class="vlist-arrow">▾</span>
+        <label class="input-label">출생시간 <span style="font-size:9px; color:var(--text-faint); letter-spacing:0.04em;">(시간을 모르면 시간대만 골라도 돼요)</span></label>
+        <!-- 입력 방식 선택 -->
+        <div class="cal-type-group" style="margin-bottom:10px;">
+          <button type="button" class="cal-btn" id="tm-exact" onclick="selectTimeMode('exact')">시간 안다</button>
+          <button type="button" class="cal-btn" id="tm-range" onclick="selectTimeMode('range')">시간대만 안다</button>
+          <button type="button" class="cal-btn" id="tm-unknown" onclick="selectTimeMode('unknown')">전혀 모름</button>
+        </div>
+        <!-- (A) 정확한 시각 입력 -->
+        <div id="timeExactWrap" style="display:none;">
+          <div class="vlist-row">
+            <div class="vlist-box" id="vb-hour">
+              <div class="vlist-display" onclick="toggleVList('hour')">
+                <span class="vlist-val" id="vv-hour">시</span>
+                <span class="vlist-arrow">▾</span>
+              </div>
+              <div class="vlist-panel" id="vl-hour"></div>
             </div>
-            <div class="vlist-panel" id="vl-hour"></div>
-          </div>
-          <div class="vlist-box" id="vb-min">
-            <div class="vlist-display" onclick="toggleVList('min')">
-              <span class="vlist-val" id="vv-min">분</span>
-              <span class="vlist-arrow">▾</span>
+            <div class="vlist-box" id="vb-min">
+              <div class="vlist-display" onclick="toggleVList('min')">
+                <span class="vlist-val" id="vv-min">분</span>
+                <span class="vlist-arrow">▾</span>
+              </div>
+              <div class="vlist-panel" id="vl-min"></div>
             </div>
-            <div class="vlist-panel" id="vl-min"></div>
           </div>
-          <label class="time-unknown-label" style="margin-left:8px;">
-            <input type="checkbox" id="birthtimeUnknown" onchange="toggleBirthtime(this)" style="cursor:pointer; accent-color:var(--gold);">
-            <span>모름</span>
-          </label>
+        </div>
+        <!-- (B) 시간대 선택 (6구간) -->
+        <div id="timeRangeWrap" style="display:none;">
+          <div class="cal-type-group" style="flex-wrap:wrap;">
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('새벽')" data-range="새벽">새벽 <span style="font-size:9px;opacity:0.6;">03–07시</span></button>
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('아침')" data-range="아침">아침 <span style="font-size:9px;opacity:0.6;">07–11시</span></button>
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('낮')" data-range="낮">낮 <span style="font-size:9px;opacity:0.6;">11–15시</span></button>
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('오후')" data-range="오후">오후 <span style="font-size:9px;opacity:0.6;">15–19시</span></button>
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('저녁')" data-range="저녁">저녁 <span style="font-size:9px;opacity:0.6;">19–23시</span></button>
+            <button type="button" class="cal-btn time-range-btn" onclick="selectTimeRange('밤')" data-range="밤">밤 <span style="font-size:9px;opacity:0.6;">23–03시</span></button>
+          </div>
+        </div>
+        <!-- (C) 전혀 모름 안내 -->
+        <div id="timeUnknownWrap" style="display:none; font-family:'DM Mono',monospace; font-size:11px; color:var(--text-faint); letter-spacing:0.04em; line-height:1.6; padding:4px 2px;">
+          시간 없이 분석합니다. 일간·대운·올해 흐름 중심으로 봐드려요.
         </div>
         <input type="hidden" id="birthtime" value="">
       </div>
@@ -939,7 +959,7 @@ const config = {
   }
 
   function toggleVList(type) {
-    if (document.getElementById('birthtimeUnknown').checked && (type === 'hour' || type === 'min')) return;
+    if (timeMode !== 'exact' && (type === 'hour' || type === 'min')) return;
     const box = document.getElementById('vb-' + type);
     const isOpen = box.classList.contains('open');
     closeAllVLists();
@@ -983,26 +1003,38 @@ const config = {
       document.getElementById('birthdate').value =
         vlState.year + '-' + String(vlState.month).padStart(2,'0') + '-' + String(vlState.day).padStart(2,'0');
     }
-    if (!document.getElementById('birthtimeUnknown').checked && vlState.hour !== null && vlState.min !== null) {
+    if (timeMode === 'exact' && vlState.hour !== null && vlState.min !== null) {
       document.getElementById('birthtime').value =
         String(vlState.hour).padStart(2,'0') + ':' + String(vlState.min).padStart(2,'0');
     }
   }
 
-  function toggleBirthtime(cb) {
-    const hourBox = document.getElementById('vb-hour');
-    const minBox = document.getElementById('vb-min');
-    if (cb.checked) {
-      closeAllVLists();
-      [hourBox, minBox].forEach(b => { b.style.opacity = '0.3'; b.style.pointerEvents = 'none'; });
+  // 출생시간 입력 방식: exact / range / unknown
+  let timeMode = null;
+  function selectTimeMode(mode) {
+    timeMode = mode;
+    ['exact','range','unknown'].forEach(m => {
+      document.getElementById('tm-' + m).classList.toggle('active', m === mode);
+    });
+    document.getElementById('timeExactWrap').style.display   = (mode === 'exact')   ? 'block' : 'none';
+    document.getElementById('timeRangeWrap').style.display   = (mode === 'range')   ? 'block' : 'none';
+    document.getElementById('timeUnknownWrap').style.display = (mode === 'unknown') ? 'block' : 'none';
+    closeAllVLists();
+    if (mode === 'unknown') {
       document.getElementById('birthtime').value = '모름';
+    } else if (mode === 'range') {
+      document.getElementById('birthtime').value = '';
     } else {
-      [hourBox, minBox].forEach(b => { b.style.opacity = '1'; b.style.pointerEvents = 'auto'; });
       document.getElementById('birthtime').value = '';
       updateHiddenFields();
     }
   }
-
+  function selectTimeRange(label) {
+    document.querySelectorAll('.time-range-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.range === label);
+    });
+    document.getElementById('birthtime').value = label;
+  }
   document.addEventListener('click', e => {
     if (!e.target.closest('.vlist-box')) closeAllVLists();
   });
@@ -1177,12 +1209,12 @@ function validateAndProceed() {
   if (!username) { showError('이름을 입력해주세요.', 'username'); return; }
   const birthdate = document.getElementById('birthdate').value.trim();
   if (!birthdate) { showError('생년월일을 선택해주세요.', 'birthdate'); return; }
-  const birthtimeUnknown = document.getElementById('birthtimeUnknown').checked;
-  const birthtime = birthtimeUnknown ? '모름' : document.getElementById('birthtime').value.trim();
-  if (!birthtimeUnknown && !birthtime) { showError('출생시간을 입력하거나 모름을 체크해주세요.', 'birthtime'); return; }
+   if (!timeMode) { showError('출생시간 입력 방식을 선택해주세요. (시간 안다 / 시간대만 안다 / 전혀 모름)', 'birthtime'); return; }
+  const birthtime = document.getElementById('birthtime').value.trim();
+  if (timeMode === 'exact' && !birthtime) { showError('출생 시·분을 선택해주세요.', 'birthtime'); return; }
+if (timeMode === 'range' && !birthtime) { showError('출생 시간대를 선택해주세요.', 'birthtime'); return; }
   const gender = document.getElementById('gender').value.trim();
   if (!gender) { showError('성별을 선택해주세요.', 'gender'); return; }
-
   const fields = config[selectedTopic].extraFields;
   for (const f of fields) {
     if (!f.required) continue;
