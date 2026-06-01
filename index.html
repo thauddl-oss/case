@@ -1250,7 +1250,7 @@ if (timeMode === 'range' && !birthtime) { showError('출생 시간대를 선택�
 
 const q1val = q1.replace(/\s+/g, ' ');
   const q2val = q2.replace(/\s+/g, ' ');
-  const situation = `${q1val}\n\n${q2val}`;
+  const situation = `${q1val}\n${q2val}`;
   const payload = {
     name: username,
     category: selectedTopic,
