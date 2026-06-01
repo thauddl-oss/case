@@ -1248,9 +1248,9 @@ if (timeMode === 'range' && !birthtime) { showError('출생 시간대를 선택�
   const btn1 = document.getElementById('submitBtn1');
   if (btn1) { btn1.disabled = true; btn1.style.opacity = '0.5'; btn1.style.cursor = 'not-allowed'; btn1.textContent = '분석 준비 중...'; }
 
-  const q1val = q1.replace(/\s+/g, ' ');
+const q1val = q1.replace(/\s+/g, ' ');
   const q2val = q2.replace(/\s+/g, ' ');
-  const situation = `[지금 감정/상황/경위] ${q1val} [원하는 것 / 궁금한 것] ${q2val}`;
+  const situation = `${q1val}\n\n${q2val}`;
   const payload = {
     name: username,
     category: selectedTopic,
