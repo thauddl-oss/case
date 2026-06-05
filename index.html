@@ -1293,7 +1293,7 @@ function submitFinal() {
   }
   document.getElementById('privacyError2').style.display = 'none';
 
-  const finalPayload = { ...window._casePayload, phone: phone };
+  const finalPayload = { ...window._casePayload, phone: phone, c: (localStorage.getItem('case_c')||'') };
 
   _finalSubmitting = true;
   const btn2 = document.getElementById('submitBtn2');
@@ -1304,6 +1304,8 @@ function submitFinal() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(finalPayload)
   }).catch(err => console.error('background submit failed:', err));
+
+  try { window.CASEtrack && window.CASEtrack('free'); } catch(e) {}   // ← 추가
 
   showCompleteScreen();
 }
@@ -1350,6 +1352,23 @@ function submitFinal() {
       </div>
     `;
   }
+  // ===== CASE 추적 스니펫 =====
+  (function () {
+    var TRACK = 'https://case-producer.thauddl.workers.dev/track';
+    try { var c = new URLSearchParams(location.search).get('c'); if (c) localStorage.setItem('case_c', c); } catch (e) {}
+    function cid(){ try { return localStorage.getItem('case_c') || ''; } catch(e){ return ''; } }
+    window.CASEtrack = function (step) {
+      var c = cid(); if (!c) return;
+      var url = TRACK + '?c=' + encodeURIComponent(c) + '&step=' + encodeURIComponent(step);
+      try { if (navigator.sendBeacon) { navigator.sendBeacon(url); return; } } catch(e){}
+      try { fetch(url, { method:'POST', keepalive:true, mode:'cors' }); } catch(e){}
+    };
+    function once(step){ var k='case_trk_'+step; try{ if(sessionStorage.getItem(k))return; sessionStorage.setItem(k,'1'); }catch(e){} window.CASEtrack(step); }
+    if (cid()) once('land');
+    function firstInput(){ once('start'); document.removeEventListener('focusin', firstInput, true); document.removeEventListener('input', firstInput, true); }
+    document.addEventListener('focusin', firstInput, true);
+    document.addEventListener('input', firstInput, true);
+  })();
 </script>
 </body>
 </html>
